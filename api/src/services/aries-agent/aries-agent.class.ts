@@ -31,6 +31,28 @@ interface Data {
   data: any;
 }
 
+interface VerifyPresentation {
+  presentation_request: any;
+  auto_present: false;
+  state: string;
+  error_msg: string;
+  presentation_exchange_id: string;
+  role: string;
+  connection_id: string;
+  initiator: string;
+  presentation: {};
+  updated_at: string;
+  created_at: string;
+  verified: string;
+}
+
+interface ProofRequest {
+  connection_id: string;
+  proof_request: any;
+  comment: string;
+  trace: boolean;
+}
+
 interface ServiceOptions {}
 
 export class AriesAgent {
@@ -82,6 +104,12 @@ export class AriesAgent {
           schema_id = this.schemas.get("default")?.schema_id;
         }
         return this.getOrCreateCredDef(schema_id);
+      case ServiceType.ProofReq:
+        if (data.action === ServiceAction.SendRequest) {
+          return this.sendProofRequest(data.data);
+        } else if (data.action === ServiceAction.Verify) {
+          return this.verifyPresentation(data.data.presentation_exchange_id);
+        }
       default:
         return new NotImplemented(
           `The operation ${data.service}/${data.action} is not supported`
@@ -170,6 +198,28 @@ export class AriesAgent {
       credential_exchange_id: credExData.credential_exchange_id,
       state: credExData.state,
     } as CredExServiceResponse;
+  }
+
+  private async sendProofRequest(proofRequest: ProofRequest): Promise<any> {
+    console.log(`Proof Request data: ${JSON.stringify(proofRequest)}`);
+    const url = `${this.agent.adminUrl}/present-proof/send-request`;
+    const response = await Axios.post(
+      url,
+      proofRequest,
+      this.getRequestConfig()
+    );
+    console.log(`send Proof Request response from agent: ${response}`);
+    return response.data;
+  }
+
+  private async verifyPresentation(
+    presentation_exchange_id: string
+  ): Promise<VerifyPresentation> {
+    console.log("Verify in progresssssssssssssss");
+    const url = `${this.agent.adminUrl}/present-proof/records/${presentation_exchange_id}/verify-presentation`;
+    const response = await Axios.post(url, null, this.getRequestConfig());
+    console.log(`verify pres response from agent: ${response}`);
+    return response.data as VerifyPresentation;
   }
 
   private async publishSchema(schema: SchemaDefinition): Promise<AriesSchema> {

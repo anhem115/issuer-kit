@@ -6,6 +6,7 @@ import {
   WebhookTopic,
   ServiceType,
   ServiceAction,
+  ProofRequestState,
 } from "../../models/enums";
 import { updateInviteRecord } from "../../utils/issuer-invite";
 import { AriesCredentialAttribute } from "../../models/credential-exchange";
@@ -14,6 +15,32 @@ interface Data {
   state?: CredExState;
   credential_exchange_id?: string;
   credential_proposal_dict?: any;
+  connection_id?: any;
+  _id?: any;
+  presentation_exchange_id?: string;
+  verified?: string;
+}
+
+interface Proof {
+  state?: ProofRequestState;
+  connection_id?: string;
+  presentation_exchange_id?: string;
+  verified?: string;
+}
+
+interface VerifyPresentation {
+  presentation_request: any;
+  auto_present: false;
+  state: string;
+  error_msg: string;
+  presentation_exchange_id: string;
+  role: string;
+  connection_id: string;
+  initiator: string;
+  presentation: {};
+  updated_at: string;
+  created_at: string;
+  verified: string;
 }
 
 interface ServiceOptions {}
@@ -27,7 +54,7 @@ export class Webhooks {
     this.app = app;
   }
 
-  async create(data: Data, params?: Params): Promise<any> {
+  async create(data: any, params?: Params): Promise<any> {
     const topic = params?.route?.topic;
     switch (topic) {
       case WebhookTopic.Connections:
@@ -36,13 +63,85 @@ export class Webhooks {
       case WebhookTopic.IssueCredential:
         this.handleIssueCredential(data);
         return { result: "Success" };
+      case WebhookTopic.ProofRequest:
+        this.handleProofRequest(data);
+        return { result: "Success" };
       default:
         return new NotImplemented(`Webhook ${topic} is not supported`);
     }
   }
 
   private async handleConnection(data: Data): Promise<any> {
-    // implement your connection webhook logic here
+    console.log(`data: ${JSON.stringify(data)}`);
+    const query = (await this.app.service("connection-test").find({
+      query: {
+        connection_id: data.connection_id,
+      },
+      paginate: false,
+    })) as string[];
+    console.log(`Before: ${JSON.stringify(query)}`);
+    const foundData = query[0] as Data;
+    await this.app
+      .service("connection-test")
+      .update(foundData._id, {
+        connection_id: data.connection_id,
+        state: data.state,
+      })
+      .then(() => console.log("Success"))
+      .catch((error) => console.log(error));
+    const afterquery = (await this.app.service("connection-test").find({
+      query: {
+        connection_id: data.connection_id,
+      },
+      paginate: false,
+    })) as string[];
+    console.log(`After: ${JSON.stringify(afterquery)}`);
+  }
+
+  private async handleProofRequest(data: Proof) {
+    // console.log(`Receice webhook! with data: ${JSON.stringify(data)}`);
+    const state = data.state;
+
+    const presentation_exchange_id = data.presentation_exchange_id;
+    const verified = data.verified;
+    console.log(
+      "Presentation: state =",
+      state,
+      ", presentation_exchange_id =",
+      presentation_exchange_id,
+      ", verified =",
+      verified
+    );
+
+    if (state === ProofRequestState.Verfied) {
+      const query = (await this.app.service("proof").find({
+        query: {
+          connection_id: data.connection_id,
+        },
+        paginate: false,
+      })) as string[];
+      const foundData = query[0] as Data;
+      await this.app
+        .service("proof")
+        .update(foundData._id, {
+          connection_id: data.connection_id,
+          state: data.state,
+          verified: verified,
+        })
+        .then(() => console.log("Success"))
+        .catch((error) => console.log(error));
+    }
+
+    if (state === ProofRequestState.PresentationReceived) {
+      const proof = await this.app.service("aries-agent").create({
+        service: ServiceType.ProofReq,
+        action: ServiceAction.Verify,
+        data: {
+          presentation_exchange_id: data.presentation_exchange_id,
+        },
+      });
+      console.log("Proof =", proof);
+    }
   }
 
   private async handleIssueCredential(data: Data): Promise<any> {

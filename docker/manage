@@ -89,8 +89,8 @@ function customizeKeycloakConfig () {
   else
     # Preparing Keycloak realm...
     echo "Configuring GitHub IDP integration for Keycloak..."
-    sed -i "s/%GITHUB_CLIENT_ID%/$GITHUB_CLIENT_ID/g" ./keycloak/config/realm-export-docker.json
-    sed -i "s/%GITHUB_CLIENT_SECRET%/$GITHUB_CLIENT_SECRET/g" ./keycloak/config/realm-export-docker.json
+    sed -i '' "s/%GITHUB_CLIENT_ID%/$GITHUB_CLIENT_ID/g" ./keycloak/config/realm-export-docker.json
+    sed -i '' "s/%GITHUB_CLIENT_SECRET%/$GITHUB_CLIENT_SECRET/g" ./keycloak/config/realm-export-docker.json
   fi
 }
 
@@ -122,16 +122,16 @@ SCRIPT_HOME="$(cd "$(dirname "$0")" && pwd)"
 # -----------------------------------------------------------------------------------------------------------------
 usage() {
   cat <<-EOF
-    
+
       Usage: $0 [command] [options]
-    
+
       Commands:
-    
+
       logs - Display the logs from the docker compose run (ctrl-c to exit).
 
       start - Runs the containers in production mode.
       up - Same as start.
-      
+
       start-dev - Runs a live development version of the containers, with hot-reloading
               enabled.
 
@@ -140,7 +140,7 @@ usage() {
 
       stop - Stops the services.  This is a non-destructive process.  The volumes and containers
              are not deleted so they will be reused the next time you run start.
-    
+
       down - Brings down the services and removes the volumes (storage) and containers.
       rm - Same as down
 
@@ -153,13 +153,14 @@ EOF
 DEFAULT_CONTAINERS="db agent wallet keycloak keycloak-db maildev"
 PROD_CONTAINERS="api issuer-admin issuer-web"
 DEV_CONTAINERS="api-dev issuer-admin-dev issuer-web-dev"
+MY_CONTAINERS="api-dev"
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
 # -----------------------------------------------------------------------------------------------------------------
 build-api() {
   BASE_IMAGE="centos/nodejs-12-centos7"
   echo "Building issuer-kit-api image using $BASE_IMAGE as base..."
-  
+
   ${S2I_EXE} build \
     --copy \
     '../api' \
@@ -425,7 +426,7 @@ case "${COMMAND}" in
     unset LEDGER_URL
     unset NGROK_AGENT_ENDPOINT
     unset AGENT_WEBHOOK_URL
-    
+
     configureEnvironment "$@"
     customizeKeycloakConfig
     docker-compose up -d ${_startupParams} ${DEFAULT_CONTAINERS} ${PROD_CONTAINERS}
@@ -447,24 +448,23 @@ case "${COMMAND}" in
     isJQInstalled
     isCurlInstalled
 
-    unset DEV_MODE
-    unset AGENT_WEBHOOK_URL
+    export AGENT_WEBHOOK_URL="http://api-dev:5000/webhooks"
     export LEDGER_URL="http://test.bcovrin.vonx.io"
     if [ -z "$NGROK_AGENT_ENDPOINT" ]; then
       isNgrokInstalled
       export NGROK_AGENT_ENDPOINT=$(${CURL_EXE} http://localhost:4040/api/tunnels | ${JQ_EXE} --raw-output '.tunnels | map(select(.name | contains("issuer-agent"))) | .[0] | .public_url')
     fi
-    
+
     checkNgrokTunnelActive
     echo "Running in demo mode, will use ${LEDGER_URL} as ledger and ${NGROK_AGENT_ENDPOINT} as the agent endpoint."
     configureEnvironment "$@"
     customizeKeycloakConfig
-    docker-compose up -d ${_startupParams} ${DEFAULT_CONTAINERS} ${PROD_CONTAINERS}
+    docker-compose up -d ${_startupParams} ${DEFAULT_CONTAINERS} ${MY_CONTAINERS}
     docker-compose logs -f
     ;;
   stop)
     configureEnvironment
-    docker-compose stop 
+    docker-compose stop
     ;;
   rm|down)
     configureEnvironment

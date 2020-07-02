@@ -9,6 +9,7 @@ import {
   AriesInvitation,
 } from "../../models/connection";
 import { ServiceAction, ServiceType } from "../../models/enums";
+import { AriesAgent } from "../aries-agent/aries-agent.class";
 
 interface Data {}
 
@@ -17,6 +18,7 @@ interface ServiceOptions {}
 export class Connection implements ServiceSwaggerAddon {
   app: Application;
   options: ServiceOptions;
+  ariesInvitation: AriesInvitation | undefined;
 
   constructor(options: ServiceOptions = {}, app: Application) {
     this.options = options;
@@ -32,11 +34,18 @@ export class Connection implements ServiceSwaggerAddon {
   }
 
   async create(data: Data, params?: Params): Promise<AriesInvitation> {
-    return (await this.app.service("aries-agent").create({
+    console.log("GOT A CREATE REQUEST");
+    this.ariesInvitation = (await this.app.service("aries-agent").create({
       service: ServiceType.Connection,
       action: ServiceAction.Create,
       data: {},
     })) as AriesInvitation;
+    const dumpValue = await this.app.service("connection-test").create({
+      connection_id: this.ariesInvitation.connection_id,
+      state: "invitation",
+    });
+    console.log(`CREATE A NEW RECORD: ${JSON.stringify(dumpValue)}`);
+    return this.ariesInvitation;
   }
 
   docs: ServiceSwaggerOptions = {

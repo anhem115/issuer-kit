@@ -224,6 +224,7 @@ services:
         --wallet-storage-config '{\"url\":\"${WALLET_HOST}:${WALLET_PORT}\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${WALLET_USER}\",\"password\":\"${WALLET_PASSWORD}\",\"admin_account\":\"postgres\",\"admin_password\":\"${WALLET_ADMIN_PASSWORD}\"}' \
         --seed '${AGENT_WALLET_SEED}' \
+        --replace-public-did
         --admin '0.0.0.0' ${AGENT_ADMIN_PORT} \
         --${AGENT_ADMIN_MODE} \
         --label ${AGENT_NAME}",
@@ -245,7 +246,7 @@ services:
       - ${WALLET_PORT}:${WALLET_PORT}
     volumes:
       - wallet-data:/var/lib/pgsql/data
-  
+
   maildev:
     image: djfarrelly/maildev
     networks:
