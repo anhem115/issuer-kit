@@ -37,7 +37,7 @@ interface VerifyPresentation {
   role: string;
   connection_id: string;
   initiator: string;
-  presentation: {};
+  presentation: any;
   updated_at: string;
   created_at: string;
   verified: string;
@@ -100,18 +100,31 @@ export class Webhooks {
 
   private async handleProofRequest(data: Proof) {
     // console.log(`Receice webhook! with data: ${JSON.stringify(data)}`);
-    const state = data.state;
 
-    const presentation_exchange_id = data.presentation_exchange_id;
-    const verified = data.verified;
-    console.log(
-      "Presentation: state =",
-      state,
-      ", presentation_exchange_id =",
-      presentation_exchange_id,
-      ", verified =",
-      verified
-    );
+    const { state } = data;
+    // const {
+    //   presentation_request,
+    //   auto_present,
+    //   state,
+    //   error_msg,
+    //   presentation_exchange_id,
+    //   role,
+    //   connection_id,
+    //   initiator,
+    //   presentation,
+    //   updated_at,
+    //   created_at,
+    //   verified,
+    // } = data;
+
+    // console.log(
+    //   "Presentation: state =",
+    //   state,
+    //   ", presentation_exchange_id =",
+    //   presentation_exchange_id,
+    //   ", verified =",
+    //   verified
+    // );
 
     if (state === ProofRequestState.Verfied) {
       const query = (await this.app.service("proof").find({
@@ -123,11 +136,7 @@ export class Webhooks {
       const foundData = query[0] as Data;
       await this.app
         .service("proof")
-        .update(foundData._id, {
-          connection_id: data.connection_id,
-          state: data.state,
-          verified: verified,
-        })
+        .update(foundData._id, data)
         .then(() => console.log("Success"))
         .catch((error) => console.log(error));
     }
@@ -140,7 +149,7 @@ export class Webhooks {
           presentation_exchange_id: data.presentation_exchange_id,
         },
       });
-      console.log("Proof =", proof);
+      console.log("Proof =", JSON.stringify(proof));
     }
   }
 
