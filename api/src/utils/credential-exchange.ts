@@ -20,7 +20,8 @@ export function formatCredentialOffer(
         "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
       attributes: attributes,
     },
-    auto_issue: false,
+    auto_remove: false,
+    trace: false,
   };
 }
 
@@ -29,12 +30,11 @@ export function formatCredentialPreview(
 ): AriesCredentialPreview {
   const issued = {
     name: "issued",
-    "mime-type": "text/plain",
     value: moment().toISOString(),
   } as AriesCredentialAttribute;
   return {
     "@type":
       "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
-    attributes: [...attributes, issued],
+    attributes: [...attributes],
   };
 }

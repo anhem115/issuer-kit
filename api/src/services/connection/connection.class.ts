@@ -40,10 +40,15 @@ export class Connection implements ServiceSwaggerAddon {
       action: ServiceAction.Create,
       data: {},
     })) as AriesInvitation;
-    const dumpValue = await this.app.service("connection-test").create({
-      connection_id: this.ariesInvitation.connection_id,
-      state: "invitation",
-    });
+    const dumpValue = await this.app
+      .service("connection-test")
+      .create({
+        connection_id: this.ariesInvitation.connection_id,
+        state: "invitation",
+      })
+      .catch((thrown) =>
+        console.log(`error in create connection class: ${thrown}`)
+      );
     console.log(`CREATE A NEW RECORD: ${JSON.stringify(dumpValue)}`);
     return this.ariesInvitation;
   }

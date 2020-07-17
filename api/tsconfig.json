@@ -5,9 +5,8 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "strict": true,
+    "lib": ["es2016", "dom"],
     "esModuleInterop": true
   },
-  "exclude": [
-    "test"
-  ]
+  "exclude": ["test"]
 }

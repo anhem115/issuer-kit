@@ -8,6 +8,7 @@ import webhooks from './webhooks/webhooks.service';
 import tokenValidation from './token-validation/token-validation.service';
 import connectionTest from './connection-test/connection-test.service';
 import proof from './proof/proof.service';
+import revocationRegistry from './revocation-registry/revocation-registry.service';
 // Don't remove this comment. It's needed to format import lines nicely.
 
 export function services(app: Application) {
@@ -18,6 +19,7 @@ export function services(app: Application) {
   app.configure(tokenValidation);
   app.configure(connectionTest);
   app.configure(proof);
+  app.configure(revocationRegistry);
 }
 
 export function internalServices(app: Application) {

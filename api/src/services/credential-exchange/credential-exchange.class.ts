@@ -27,6 +27,7 @@ interface ServiceOptions {}
 export class CredentialExchange implements ServiceSwaggerAddon {
   app: Application;
   options: ServiceOptions;
+  util = require("util");
 
   constructor(options: ServiceOptions = {}, app: Application) {
     this.options = options;
@@ -43,20 +44,30 @@ export class CredentialExchange implements ServiceSwaggerAddon {
 
   async create(data: Data, params?: Params): Promise<CredExServiceResponse> {
     const comment = this.app.get("issuer").offerComment;
-    const attributes = data.claims.map(
+    let attributes = data.claims.map(
       (claim: any) =>
         ({
           name: claim.name,
           value: claim.value,
-          "mime-type": "text/plain",
         } as AriesCredentialAttribute)
     );
 
-    const cred_def_id = (await this.app.service("aries-agent").create({
-      service: ServiceType.CredDef,
-      action: ServiceAction.Create,
-      data: { schema_id: data.schema_id },
-    })) as CredDefServiceResponse;
+    console.log(`data: ${this.util.inspect(data)}`);
+
+    console.log(`attributes: ${this.util.inspect(attributes)}`);
+
+    const cred_def_id = (await this.app
+      .service("aries-agent")
+      .create({
+        service: ServiceType.CredDef,
+        action: ServiceAction.Create,
+        data: { schema_id: data.schema_id },
+      })
+      .catch((thrown) =>
+        console.log(
+          `Get error at credential definition: ${this.util.inspect(thrown)}`
+        )
+      )) as CredDefServiceResponse;
 
     const credentialOffer = formatCredentialOffer(
       data.connection_id,

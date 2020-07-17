@@ -29,5 +29,8 @@
         "description": "CSB Audio"
       }
     ]
+  },
+  "credentials": {
+    "schema_id": "NFP8kaWvCupbDQHQhErwXb:2:mbcc-tier1.gov-mbcc:1.0.0"
   }
 }

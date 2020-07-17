@@ -12,6 +12,8 @@ export interface AriesCredentialPreview {
 export interface AriesCredentialOffer {
   auto_issue?: boolean;
   auto_offer?: boolean;
+  auto_remove?: boolean;
+  trace?: boolean;
   connection_id: string;
   comment: string;
   cred_def_id: string;
@@ -21,7 +23,7 @@ export interface AriesCredentialOffer {
 export interface AriesCredentialExchange {
   credential_proposal_dict: any;
   auto_offer: false;
-  revocation_id: string;
+  revocation_id?: string;
   auto_issue: false;
   connection_id: string;
   role: string;
@@ -33,7 +35,7 @@ export interface AriesCredentialExchange {
   credential_offer: AriesCredentialOffer;
   parent_thread_id: string;
   initiator: string;
-  revoc_reg_id: string;
+  revoc_reg_id?: string;
   schema_id: string;
   credential_request: any;
   credential_exchange_id: string;
@@ -49,4 +51,6 @@ export interface AriesCredentialExchange {
 export interface CredExServiceResponse {
   credential_exchange_id: string;
   state: string;
+  revoc_reg_id?: string;
+  revocation_id?: string;
 }

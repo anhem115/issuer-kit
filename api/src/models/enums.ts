@@ -11,6 +11,7 @@ export enum ServiceType {
   CredEx,
   CredDef,
   ProofReq,
+  RevocationResgitry,
 }
 
 export enum WebhookTopic {

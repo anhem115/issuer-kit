@@ -1,15 +1,6 @@
 [
   {
-    "id": "85459GxjNySJ8HwTTQ4vq7:2:verified_person:1.4.0",
+    "id": "NFP8kaWvCupbDQHQhErwXb:2:mbcc-tier1.gov-mbcc:1.0.0",
     "default": true
-  },
-  {
-    "schema_name": "my_schema",
-    "schema_version": "0.01",
-    "attributes": [
-      "attr1",
-      "attr2",
-      "attr3"
-    ]
   }
 ]

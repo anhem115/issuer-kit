@@ -1,6 +1,9 @@
 {
   "host": "localhost",
   "port": "PORT",
+  "ledgerUrl": "LEDGER_URL",
+  "publicTailsUrl": "PUBLIC_TAILS_URL",
+  "credentialDefinitionTag": "TAG",
   "public": "../public/",
   "paginate": {
     "default": 10,

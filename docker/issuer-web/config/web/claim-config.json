@@ -1,7 +1,7 @@
 {
   "questions": [
     {
-      "name": "given_names",
+      "name": "first_name",
       "type": "text",
       "title": "First Name:",
       "placeHolder": "",
@@ -9,7 +9,15 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "family_name",
+      "name": "middle_name",
+      "type": "text",
+      "title": "Middle Name:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "last_name",
       "type": "text",
       "title": "Last Name:",
       "placeHolder": "",
@@ -17,18 +25,26 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "birthdate",
+      "name": "other_name",
       "type": "text",
-      "inputType": "date",
-      "title": "Date of Birth:",
+      "title": "Other Name:",
       "placeHolder": "",
       "isRequired": true,
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "street_address",
+      "name": "email",
       "type": "text",
-      "title": "Street Address:",
+      "inputType": "email",
+      "title": "Email:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "home_address",
+      "type": "text",
+      "title": "Home Address:",
       "placeHolder": "",
       "isRequired": true,
       "requiredErrorText": "Required Field"
@@ -42,7 +58,7 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "locality",
+      "name": "city",
       "type": "text",
       "title": "City:",
       "placeHolder": "",
@@ -50,7 +66,7 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "region",
+      "name": "province",
       "type": "text",
       "title": "Province:",
       "placeHolder": "",
@@ -58,9 +74,9 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "country",
+      "name": "unit",
       "type": "text",
-      "title": "Country:",
+      "title": "Unit:",
       "placeHolder": "",
       "defaultValue": "Canada",
       "isRequired": true,

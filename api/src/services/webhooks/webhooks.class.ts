@@ -8,7 +8,11 @@ import {
   ServiceAction,
   ProofRequestState,
 } from "../../models/enums";
-import { updateInviteRecord } from "../../utils/issuer-invite";
+import {
+  updateInviteRecord,
+  storeCredentialExchangeInfo,
+  getCredentialExchangeInfo,
+} from "../../utils/issuer-invite";
 import { AriesCredentialAttribute } from "../../models/credential-exchange";
 
 interface Data {
@@ -48,6 +52,7 @@ interface ServiceOptions {}
 export class Webhooks {
   app: Application;
   options: ServiceOptions;
+  util = require("util");
 
   constructor(options: ServiceOptions = {}, app: Application) {
     this.options = options;
@@ -72,14 +77,14 @@ export class Webhooks {
   }
 
   private async handleConnection(data: Data): Promise<any> {
-    console.log(`data: ${JSON.stringify(data)}`);
+    console.log(`data: ${this.util.inspect(data)}`);
     const query = (await this.app.service("connection-test").find({
       query: {
         connection_id: data.connection_id,
       },
       paginate: false,
     })) as string[];
-    console.log(`Before: ${JSON.stringify(query)}`);
+    console.log(`Before: ${this.util.inspect(query)}`);
     const foundData = query[0] as Data;
     await this.app
       .service("connection-test")
@@ -95,11 +100,11 @@ export class Webhooks {
       },
       paginate: false,
     })) as string[];
-    console.log(`After: ${JSON.stringify(afterquery)}`);
+    console.log(`After: ${this.util.inspect(afterquery)}`);
   }
 
   private async handleProofRequest(data: Proof) {
-    // console.log(`Receice webhook! with data: ${JSON.stringify(data)}`);
+    // console.log(`Receice webhook! with data: ${this.util.inspect(data)}`);
 
     const { state } = data;
     // const {
@@ -149,7 +154,7 @@ export class Webhooks {
           presentation_exchange_id: data.presentation_exchange_id,
         },
       });
-      console.log("Proof =", JSON.stringify(proof));
+      console.log("Proof =", this.util.inspect(proof));
     }
   }
 
@@ -158,7 +163,7 @@ export class Webhooks {
       case CredExState.RequestReceived:
         const attributes = data.credential_proposal_dict?.credential_proposal
           ?.attributes as AriesCredentialAttribute[];
-        await this.app.service("aries-agent").create({
+        const credExchangeData = await this.app.service("aries-agent").create({
           service: ServiceType.CredEx,
           action: ServiceAction.Issue,
           data: {
@@ -166,6 +171,21 @@ export class Webhooks {
             attributes: attributes,
           },
         });
+        // await storeCredentialExchangeInfo(
+        //   {
+        //     credExchangeData,
+        //   },
+        //   this.app
+        // );
+        const dataInMongo = await Promise.all([
+          getCredentialExchangeInfo(
+            {
+              credential_exchange_id: credExchangeData.credential_exchange_id,
+            },
+            this.app
+          ),
+        ]);
+        console.log(`data in mongo: ${JSON.stringify(dataInMongo)}`);
         return { result: "Success" };
       case CredExState.Issued:
         console.log(

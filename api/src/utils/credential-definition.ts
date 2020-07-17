@@ -1,11 +1,13 @@
 import { AriesCredentialDefinition } from "../models/credential-definition";
 
 export function formatCredentialDefinition(
-  schema_id: string
+  revocation: boolean,
+  schema_id: string,
+  tag_value: string = "default"
 ): AriesCredentialDefinition {
   return {
-    support_revocation: false,
+    support_revocation: revocation,
     schema_id: schema_id,
-    tag: "default",
+    tag: tag_value,
   };
 }

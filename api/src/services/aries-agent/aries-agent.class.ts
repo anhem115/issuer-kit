@@ -19,6 +19,8 @@ import { AriesSchema, SchemaDefinition } from "../../models/schema";
 import { formatCredentialDefinition } from "../../utils/credential-definition";
 import { loadJSON } from "../../utils/load-config-file";
 import { formatCredentialPreview } from "../../utils/credential-exchange";
+import { Service } from "feathers-mongodb/types";
+import app from "../../app";
 
 interface AgentSettings {
   adminUrl: string;
@@ -62,6 +64,7 @@ export class AriesAgent {
   agent: AgentSettings;
   schemas: Map<string, AriesSchema>;
   credDefs: Map<string, string>;
+  util = require("util");
 
   constructor(options: ServiceOptions = {}, app: Application) {
     this.options = options;
@@ -110,6 +113,12 @@ export class AriesAgent {
         } else if (data.action === ServiceAction.Verify) {
           return this.verifyPresentation(data.data.presentation_exchange_id);
         }
+      case ServiceType.RevocationResgitry:
+        if (data.action == ServiceAction.Create) {
+          //create revocation registry, fetch tail file, update and publish
+          let cred_def_id = data.data.cred_def_id;
+          return this.createRevocationRegistry(cred_def_id);
+        }
       default:
         return new NotImplemented(
           `The operation ${data.service}/${data.action} is not supported`
@@ -117,12 +126,12 @@ export class AriesAgent {
     }
   }
 
-  private getRequestConfig(): AxiosRequestConfig {
+  private getRequestConfig(): any {
     return {
       headers: {
         "x-api-key": this.agent.adminApiKey,
       },
-    } as AxiosRequestConfig;
+    };
   }
 
   private async initSchemas() {
@@ -135,6 +144,7 @@ export class AriesAgent {
       } else {
         // Check wether the schema was registered
         schema = await this.publishSchema(schemaDef);
+        console.log(`Schema:${this.util.inspect(schema)}`);
       }
       this.schemas.set(schema.schema_id || schema.schema.id, schema);
       if (schemaDef.default) {
@@ -168,6 +178,8 @@ export class AriesAgent {
     return {
       credential_exchange_id: credExData.credential_exchange_id,
       state: credExData.state,
+      revocation_id: credExData.revocation_id,
+      revoc_reg_id: credExData.revoc_reg_id,
     } as CredExServiceResponse;
   }
 
@@ -187,22 +199,32 @@ export class AriesAgent {
     id: string,
     attributes: AriesCredentialAttribute[]
   ): Promise<CredExServiceResponse> {
+    //need to check for active-registry, and creat new revocation registry before issuing
     const url = `${this.agent.adminUrl}/issue-credential/records/${id}/issue`;
+    console.log(
+      `credential preview: ${this.util.inspect(
+        formatCredentialPreview(attributes)
+      )}`
+    );
     const response = await Axios.post(
       url,
       { credential_preview: formatCredentialPreview(attributes) },
       this.getRequestConfig()
     );
     const credExData = response.data as AriesCredentialExchange;
+
+    console.log(`credential issued data: ${this.util.inspect(credExData)}`);
     return {
       credential_exchange_id: credExData.credential_exchange_id,
       state: credExData.state,
+      revocation_id: credExData.revocation_id,
     } as CredExServiceResponse;
   }
 
   private async sendProofRequest(proofRequest: ProofRequest): Promise<any> {
-    console.log(`Proof Request data: ${JSON.stringify(proofRequest)}`);
+    console.log(`Proof Request data: ${this.util.inspect(proofRequest)}`);
     const url = `${this.agent.adminUrl}/present-proof/send-request`;
+    console.log(`url: ${this.util.inspect(url)}`);
     const response = await Axios.post(
       url,
       proofRequest,
@@ -244,11 +266,146 @@ export class AriesAgent {
       };
     } else {
       const url = `${this.agent.adminUrl}/credential-definitions`;
-      const credDef = formatCredentialDefinition(schema_id);
+      const tag = this.app.get("credentialDefinitionTag");
+      const credDef = formatCredentialDefinition(true, schema_id, tag);
+      console.log(`Cred Definition: ${this.util.inspect(credDef)}`);
       const response = await Axios.post(url, credDef, this.getRequestConfig());
       credExResponse = response.data as CredDefServiceResponse;
       this.credDefs.set(schema_id, credExResponse.credential_definition_id);
     }
+    console.log(`Finish the Cred Def ${this.util.inspect(credExResponse)}`);
+    let cred_def_id = credExResponse.credential_definition_id;
+    //check for current active registry
+    const url = `${this.agent.adminUrl}/revocation/active-registry/${cred_def_id}`;
+    const result = await Axios.get(url, this.getRequestConfig())
+      .then((response) => {
+        console.log("Revocation registry is available");
+        return response;
+      })
+      .catch((thrown) => {
+        console.log(`Get some error ${thrown.response.status}`);
+        return thrown.response.status;
+      });
+    let rev_reg_result;
+    if (result == 404) {
+      console.log("Creating revocation registry... ");
+      rev_reg_result = await this.createRevocationRegistry(cred_def_id)
+        .then((data) => data)
+        .catch((thrown) => {
+          console.log(
+            `Error in create revocation registry: ${this.util.inspect(thrown)}`
+          );
+          return 404;
+        });
+      console.log(`Finish cred definition: ${rev_reg_result}`);
+    }
+    console.log(
+      `Finish creating revocation registry: ${this.util.inspect(result)}`
+    );
     return credExResponse;
+  }
+
+  private async createRevocationRegistry(cred_def_id: string) {
+    let url = `${this.agent.adminUrl}/revocation/create-registry`;
+    let data = {
+      max_cred_num: 20,
+      credential_definition_id: cred_def_id,
+    };
+
+    console.log(`create registry for ${cred_def_id}`);
+    const response: any = await Axios.post(
+      url,
+      data,
+      this.getRequestConfig()
+    ).catch((thrown) => {
+      console.log(`XXX error: ${this.util.inspect(thrown)}`);
+    });
+    // console.log("Get response:");
+    // console.log(util.inspect(response, false, null, true /* enable colors */));
+    console.log(`got response... ${response.data}`);
+    const revoc_reg_id = response.data.result.revoc_reg_id;
+    console.log(`XXXX: ${revoc_reg_id}`);
+    const tailHash = response.data.result.tails_hash;
+    //fetch tail file
+    url = `${this.agent.adminUrl}/revocation/registry/${revoc_reg_id}/tails-file`;
+    const tailFile = await Axios.get(url, {
+      responseType: "arraybuffer",
+      headers: {
+        "x-api-key": this.agent.adminApiKey,
+      },
+    });
+    console.log(`XXXX: received the tailFile ${tailFile}`);
+    //compare hash between tailFile using sha256
+    //update tail file url
+    const genesisFile = await Axios.get(
+      `${app.get("ledgerUrl")}/genesis`,
+      this.getRequestConfig()
+    );
+    //let test = new Blob();
+    //const genesisData = new Blob([JSON.stringify(genesisFile.data)]);
+    console.log(`XXXX: Received genesis file ${genesisFile}`);
+    const tailFileServer = app.get("publicTailsUrl");
+    console.log(`XXXX: public tail url: ${tailFileServer}`);
+    const tailFileUrl = `${tailFileServer}/${revoc_reg_id}`;
+    const newTailInfo = {
+      tails_public_uri: tailFileUrl,
+    };
+    url = `${this.agent.adminUrl}/revocation/registry/${revoc_reg_id}`;
+    const updateUriResult: any = await Axios.patch(
+      url,
+      newTailInfo,
+      this.getRequestConfig()
+    ).catch((thrown) => {
+      console.log(`error in update Uri: ${this.util.inspect(thrown)}`);
+      return "Error";
+    });
+    console.log(
+      `XXXX: update the new tail url: ${this.util.inspect(
+        updateUriResult.data
+      )}`
+    );
+    //publish to ledger
+    url = `${this.agent.adminUrl}/revocation/registry/${revoc_reg_id}/publish`;
+    const publishResult: any = await Axios.post(
+      url,
+      {},
+      this.getRequestConfig()
+    ).catch((thrown) => {
+      console.log(`${this.util.inspect(thrown.response)}`);
+      return "Error";
+    });
+    console.log(
+      `XXXX: publish the revocation to the ledger: ${this.util.inspect(
+        publishResult.data
+      )}`
+    );
+    //send tailFile to tail file server
+    const tailFileServerData = {
+      genesis: genesisFile.data,
+      tails: tailFile.data,
+    };
+    let FormData = require("form-data");
+    let formData = new FormData();
+    formData.append("genesis", genesisFile.data);
+    formData.append("tails", tailFile.data);
+    console.log(`tail file server data: ${this.util.inspect(formData)}`);
+    const uploadTailHash = await Axios.put(tailFileUrl, formData, {
+      headers: formData.getHeaders(),
+    })
+      .then((data) => data)
+      .catch((thrown) => {
+        console.log(
+          `XXXX: publish the tail file to the tail file server ${this.util.inspect(
+            thrown
+          )}`
+        );
+        return "Error";
+      });
+    console.log(
+      `XXXX: publish the tail file to the tail file server: ${this.util.inspect(
+        uploadTailHash
+      )}`
+    );
+    return { success: true };
   }
 }
