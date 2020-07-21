@@ -18,9 +18,13 @@ import { ServiceAction, ServiceType } from "../../models/enums";
 import { AriesSchema, SchemaDefinition } from "../../models/schema";
 import { formatCredentialDefinition } from "../../utils/credential-definition";
 import { loadJSON } from "../../utils/load-config-file";
-import { formatCredentialPreview } from "../../utils/credential-exchange";
+import {
+  formatCredentialPreview,
+  tierChecker,
+} from "../../utils/credential-exchange";
 import { Service } from "feathers-mongodb/types";
 import app from "../../app";
+import { getCredentialExchangeInfo } from "../../utils/issuer-invite";
 
 interface AgentSettings {
   adminUrl: string;
@@ -98,8 +102,11 @@ export class AriesAgent {
         } else if (data.action === ServiceAction.Issue) {
           return this.issueCredential(
             data.data.credential_exchange_id,
-            data.data.attributes
+            data.data.attributes,
+            data.data.credential_definition_id
           );
+        } else if (data.action === ServiceAction.Revoke) {
+          return this.revokeCredential(data.data.credential_exchange_id);
         }
       case ServiceType.CredDef:
         let schema_id = data.data.schema_id;
@@ -196,11 +203,13 @@ export class AriesAgent {
   }
 
   private async issueCredential(
-    id: string,
-    attributes: AriesCredentialAttribute[]
+    credential_exchange_id: string,
+    attributes: AriesCredentialAttribute[],
+    credential_definition_id: string
   ): Promise<CredExServiceResponse> {
     //need to check for active-registry, and creat new revocation registry before issuing
-    const url = `${this.agent.adminUrl}/issue-credential/records/${id}/issue`;
+    await this.checkForRevocationRegistrySpace(credential_definition_id);
+    const url = `${this.agent.adminUrl}/issue-credential/records/${credential_exchange_id}/issue`;
     console.log(
       `credential preview: ${this.util.inspect(
         formatCredentialPreview(attributes)
@@ -208,17 +217,31 @@ export class AriesAgent {
     );
     const response = await Axios.post(
       url,
-      { credential_preview: formatCredentialPreview(attributes) },
+      {
+        credential_preview: formatCredentialPreview(attributes),
+      },
       this.getRequestConfig()
     );
     const credExData = response.data as AriesCredentialExchange;
 
     console.log(`credential issued data: ${this.util.inspect(credExData)}`);
     return {
-      credential_exchange_id: credExData.credential_exchange_id,
       state: credExData.state,
       revocation_id: credExData.revocation_id,
+      revoc_reg_id: credExData.revoc_reg_id,
     } as CredExServiceResponse;
+  }
+
+  private async revokeCredential(credential_revok_info: any) {
+    console.log(
+      `credential revok info ${JSON.stringify(credential_revok_info)}`
+    );
+    const revocation_id = credential_revok_info.revocation_id;
+    const revoc_reg_id = credential_revok_info.revoc_reg_id;
+    const publish_now = true;
+    const url = `${this.agent.adminUrl}/issue-credential/revoke?$rev_reg_id=${revoc_reg_id}&revocation_id=${revocation_id}&publish=${publish_now}`;
+    const response = await Axios.post(url, {}, this.getRequestConfig());
+    return response;
   }
 
   private async sendProofRequest(proofRequest: ProofRequest): Promise<any> {
@@ -276,6 +299,37 @@ export class AriesAgent {
     console.log(`Finish the Cred Def ${this.util.inspect(credExResponse)}`);
     let cred_def_id = credExResponse.credential_definition_id;
     //check for current active registry
+    await this.checkForRevocationRegistrySpace(cred_def_id);
+    // const url = `${this.agent.adminUrl}/revocation/active-registry/${cred_def_id}`;
+    // const result = await Axios.get(url, this.getRequestConfig())
+    //   .then((response) => {
+    //     console.log("Revocation registry is available");
+    //     return response;
+    //   })
+    //   .catch((thrown) => {
+    //     console.log(`Get some error ${thrown.response.status}`);
+    //     return thrown.response.status;
+    //   });
+    // let rev_reg_result;
+    // if (result == 404) {
+    //   console.log("Creating revocation registry... ");
+    //   rev_reg_result = await this.createRevocationRegistry(cred_def_id)
+    //     .then((data) => data)
+    //     .catch((thrown) => {
+    //       console.log(
+    //         `Error in create revocation registry: ${this.util.inspect(thrown)}`
+    //       );
+    //       return 404;
+    //     });
+    //   console.log(`Finish cred definition: ${rev_reg_result}`);
+    // }
+    // console.log(
+    //   `Finish creating revocation registry: ${this.util.inspect(result)}`
+    // );
+    return credExResponse;
+  }
+
+  private async checkForRevocationRegistrySpace(cred_def_id: string) {
     const url = `${this.agent.adminUrl}/revocation/active-registry/${cred_def_id}`;
     const result = await Axios.get(url, this.getRequestConfig())
       .then((response) => {
@@ -298,11 +352,10 @@ export class AriesAgent {
           return 404;
         });
       console.log(`Finish cred definition: ${rev_reg_result}`);
+      console.log(
+        `Finish creating revocation registry: ${this.util.inspect(result)}`
+      );
     }
-    console.log(
-      `Finish creating revocation registry: ${this.util.inspect(result)}`
-    );
-    return credExResponse;
   }
 
   private async createRevocationRegistry(cred_def_id: string) {

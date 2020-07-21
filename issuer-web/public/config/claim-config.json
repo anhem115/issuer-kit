@@ -1,7 +1,7 @@
 {
   "questions": [
     {
-      "name": "given_names",
+      "name": "first_name",
       "type": "text",
       "title": "First Name:",
       "placeHolder": "",
@@ -9,7 +9,15 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "family_name",
+      "name": "middle_name",
+      "type": "text",
+      "title": "Middle Name:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "last_name",
       "type": "text",
       "title": "Last Name:",
       "placeHolder": "",
@@ -17,18 +25,26 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "birthdate",
+      "name": "other_name",
       "type": "text",
-      "inputType": "date",
-      "title": "Date of Birth:",
+      "title": "Other Name:",
       "placeHolder": "",
       "isRequired": true,
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "street_address",
+      "name": "email",
       "type": "text",
-      "title": "Street Address:",
+      "inputType": "email",
+      "title": "Email:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "home_address",
+      "type": "text",
+      "title": "Home Address:",
       "placeHolder": "",
       "isRequired": true,
       "requiredErrorText": "Required Field"
@@ -42,7 +58,7 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "locality",
+      "name": "city",
       "type": "text",
       "title": "City:",
       "placeHolder": "",
@@ -50,7 +66,7 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "region",
+      "name": "province",
       "type": "text",
       "title": "Province:",
       "placeHolder": "",
@@ -58,11 +74,163 @@
       "requiredErrorText": "Required Field"
     },
     {
-      "name": "country",
+      "name": "unit",
       "type": "text",
-      "title": "Country:",
+      "title": "Unit:",
       "placeHolder": "",
       "defaultValue": "Canada",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "date_of_birth",
+      "type": "text",
+      "inputType": "date",
+      "title": "Date Of Birth:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "birth_country",
+      "type": "text",
+      "title": "Birth Country:",
+      "placeHolder": "",
+      "defaultValue": "Canada",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "birth_city",
+      "type": "text",
+      "title": "Birth City:",
+      "placeHolder": "",
+      "defaultValue": "Winnipeg",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "sex",
+      "type": "text",
+      "title": "Sex",
+      "placeHolder": "",
+      "defaultValue": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "license_number",
+      "type": "text",
+      "title": "License Number:",
+      "placeHolder": "",
+      "defaultValue": "123XYZ",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "dd",
+      "type": "text",
+      "title": "DD:",
+      "placeHolder": "",
+      "defaultValue": "xxx",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "class",
+      "type": "text",
+      "title": "Class:",
+      "placeHolder": "",
+      "defaultValue": "xxx",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "expiration_date",
+      "type": "text",
+      "inputType": "date",
+      "title": "Expiration Date:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "eye_color",
+      "type": "text",
+      "title": "Eye Color:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "height",
+      "type": "text",
+      "title": "Height:",
+      "placeHolder": "",
+      "defaultValue": "177",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "sin",
+      "type": "text",
+      "title": "SIN - Social Insurance Number:",
+      "placeHolder": "",
+      "defaultValue": "123456789",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "health_principal_name",
+      "type": "text",
+      "title": "Principal name:",
+      "placeHolder": "",
+      "defaultValue": "Anh Tran",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "health_card_number",
+      "type": "text",
+      "title": "Health Card Number:",
+      "placeHolder": "",
+      "defaultValue": "123456",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "health_coverage_start_date",
+      "type": "text",
+      "inputType": "date",
+      "title": "Health Coverage Start Date:",
+      "placeHolder": "",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "bank_institution_number",
+      "type": "text",
+      "title": "Bank Institution Number:",
+      "placeHolder": "",
+      "defaultValue": "123444",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "bank_transit_code",
+      "type": "text",
+      "title": "Transit Code:",
+      "placeHolder": "",
+      "defaultValue": "XXX",
+      "isRequired": true,
+      "requiredErrorText": "Required Field"
+    },
+    {
+      "name": "bank_account_number",
+      "type": "text",
+      "title": "Bank Account Number:",
+      "placeHolder": "",
+      "defaultValue": "123123123",
       "isRequired": true,
       "requiredErrorText": "Required Field"
     }

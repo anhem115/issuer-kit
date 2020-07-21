@@ -4,6 +4,7 @@ export enum ServiceAction {
   Issue,
   Verify,
   SendRequest,
+  Revoke,
 }
 
 export enum ServiceType {

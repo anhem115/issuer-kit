@@ -49,8 +49,10 @@ export interface AriesCredentialExchange {
 }
 
 export interface CredExServiceResponse {
-  credential_exchange_id: string;
+  credential_exchange_id?: string;
   state: string;
   revoc_reg_id?: string;
   revocation_id?: string;
+  schema_id?: string;
+  credential?: any;
 }

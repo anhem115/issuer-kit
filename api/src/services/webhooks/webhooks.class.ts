@@ -14,6 +14,7 @@ import {
   getCredentialExchangeInfo,
 } from "../../utils/issuer-invite";
 import { AriesCredentialAttribute } from "../../models/credential-exchange";
+import { tierChecker } from "../../utils/credential-exchange";
 
 interface Data {
   state?: CredExState;
@@ -23,6 +24,7 @@ interface Data {
   _id?: any;
   presentation_exchange_id?: string;
   verified?: string;
+  credential_definition_id?: string;
 }
 
 interface Proof {
@@ -163,40 +165,78 @@ export class Webhooks {
       case CredExState.RequestReceived:
         const attributes = data.credential_proposal_dict?.credential_proposal
           ?.attributes as AriesCredentialAttribute[];
-        const credExchangeData = await this.app.service("aries-agent").create({
-          service: ServiceType.CredEx,
-          action: ServiceAction.Issue,
-          data: {
-            credential_exchange_id: data.credential_exchange_id,
-            attributes: attributes,
+        //need to add the credential exchange id (application_number) and tier value
+        const tier = tierChecker(attributes);
+        const generated_data = [
+          {
+            name: "tier",
+            value: tier,
           },
+          {
+            name: "application_number",
+            value: data.credential_exchange_id,
+          },
+        ];
+
+        const attributes_with_extra_info = [...attributes, ...generated_data];
+
+        const cred_exchange_data = await this.app
+          .service("aries-agent")
+          .create({
+            service: ServiceType.CredEx,
+            action: ServiceAction.Issue,
+            data: {
+              credential_exchange_id: data.credential_exchange_id,
+              credential_defnition_id: data.credential_definition_id,
+              attributes: attributes_with_extra_info,
+            },
+          });
+        console.log(
+          `all data: ${this.util.inspect(attributes_with_extra_info)}`
+        );
+        let cred_data: any = {};
+        attributes_with_extra_info.forEach((data: any) => {
+          cred_data[data["name"]] = data["value"];
+        });
+        cred_data["cred_exchange_data"] = cred_exchange_data;
+        cred_data["connection_id"] = data.connection_id;
+        const response = await this.app.service("user").create({
+          ...cred_data,
         });
         // await storeCredentialExchangeInfo(
         //   {
-        //     credExchangeData,
+        //     ...cred_data,
         //   },
         //   this.app
         // );
-        const dataInMongo = await Promise.all([
-          getCredentialExchangeInfo(
-            {
-              credential_exchange_id: credExchangeData.credential_exchange_id,
-            },
-            this.app
-          ),
-        ]);
-        console.log(`data in mongo: ${JSON.stringify(dataInMongo)}`);
+        console.log(`all attributes: ${this.util.inspect(cred_data)}`);
         return { result: "Success" };
       case CredExState.Issued:
         console.log(
           `Credential issued for cred_ex_id ${data.credential_exchange_id}`
         );
+        //this.app.service("user").update({})
+        const query = (await this.app.service("user").find({
+          query: {
+            application_number: data.credential_exchange_id,
+            connection_id: data.connection_id,
+          },
+          paginate: false,
+        })) as string[];
+        const foundData = query[0] as Data;
+        await this.app
+          .service("user")
+          .patch(foundData._id, { cred_exchange_data: { state: data.state } })
+          .then(() => console.log("Success"))
+          .catch((error) => console.log(error));
         updateInviteRecord(
           { credential_exchange_id: data.credential_exchange_id },
           { issued: true },
           this.app
         );
         return { result: "Success" };
+      case CredExState.OfferSent:
+        console.log(`Offer send for data: ${this.util.inspect(data)} `);
       default:
         console.warn(
           `Received unexpected state ${data.state} for cred_ex_id ${data.credential_exchange_id}`
