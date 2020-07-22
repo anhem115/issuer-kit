@@ -106,7 +106,8 @@ export class AriesAgent {
             data.data.credential_definition_id
           );
         } else if (data.action === ServiceAction.Revoke) {
-          return this.revokeCredential(data.data.credential_exchange_id);
+          console.log(`ok data: ${this.util.inspect(data.data)}`);
+          return this.revokeCredential(data.data);
         }
       case ServiceType.CredDef:
         let schema_id = data.data.schema_id;
@@ -237,14 +238,12 @@ export class AriesAgent {
     } as CredExServiceResponse;
   }
 
-  private async revokeCredential(credential_revok_info: any) {
-    console.log(
-      `credential revok info ${JSON.stringify(credential_revok_info)}`
-    );
-    const revocation_id = credential_revok_info.revocation_id;
-    const revoc_reg_id = credential_revok_info.revoc_reg_id;
-    const publish_now = credential_revok_info.publish;
-    const url = `${this.agent.adminUrl}/issue-credential/revoke?$rev_reg_id=${revoc_reg_id}&revocation_id=${revocation_id}&publish=${publish_now}`;
+  private async revokeCredential(data: any) {
+    console.log(`credential revok info ${JSON.stringify(data)}`);
+    const revocation_id = data.revocation_id;
+    const revoc_reg_id = data.revoc_reg_id;
+    const publish_now = data.publish;
+    const url = `${this.agent.adminUrl}/issue-credential/revoke?rev_reg_id=${revoc_reg_id}&cred_rev_id=${revocation_id}&publish=${publish_now}`;
     const response = await Axios.post(url, {}, this.getRequestConfig());
     return response;
   }

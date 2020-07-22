@@ -229,6 +229,9 @@ export class Webhooks {
         //   paginate: false,
         // })) as string[];
         //
+
+        //update the old data with new data
+        //this is the data from the offer
         const response = await this.app
           .service("user")
           .update(ObjectID(cred_data.application_number), {
@@ -248,7 +251,7 @@ export class Webhooks {
         const foundData = query[0] as Data;
         await this.app
           .service("user")
-          .patch(foundData._id, { cred_exchange_data: { state: data.state } })
+          .patch(foundData._id, { "cred_exchange_data.state": data.state })
           .then(() => console.log("Success"))
           .catch((error) => console.log(error));
         updateInviteRecord(

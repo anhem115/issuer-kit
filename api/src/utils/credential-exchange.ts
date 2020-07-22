@@ -78,15 +78,17 @@ export function tierChecker(attributes: any) {
   let tier_1_count = 0;
   let tier_2_count = 0;
   let tier_3_count = 0;
-  attributes.forEach((value: any) => {
-    if (TIER_1.includes(value.name)) {
-      tier_1_count++;
-    }
-    if (TIER_2.includes(value.name)) {
-      tier_2_count++;
-    }
-    if (TIER_3.includes(value.name)) {
-      tier_3_count++;
+  attributes.forEach((info: any) => {
+    if (info.value.trim() != "") {
+      if (TIER_1.includes(info.name)) {
+        tier_1_count++;
+      }
+      if (TIER_2.includes(info.name)) {
+        tier_2_count++;
+      }
+      if (TIER_3.includes(info.name)) {
+        tier_3_count++;
+      }
     }
   });
   let tier = 0;

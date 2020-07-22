@@ -151,6 +151,7 @@ export default class Connect extends Vue {
       claims: credential.claims,
       schema_id: config.credentials?.schema_id, // eslint-disable-line @typescript-eslint/camelcase
     };
+    console.log(`data to post: ${JSON.stringify(data)} `);
     return Axios.post(`${config.apiServer.url}/credential-exchange/`, data, {
       cancelToken: this.cancelTokenSource.token,
     });

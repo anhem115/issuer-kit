@@ -156,21 +156,68 @@ export class CredentialExchange implements ServiceSwaggerAddon {
         )
       )) as CredDefServiceResponse;
 
-    const new_record = await this.app
+    //check old or new record
+
+    const publish_now = true;
+    const query_result: any = await this.app
       .service("user")
-      .create({ connection_id: data.connection_id });
-    console.log(`NEW RECORDDDDDDDDDDD: ${JSON.stringify(new_record)}`);
+      .find({ connection_id: data.connection_id });
+
+    let generated_data: any = [];
     const tier = tierChecker(attributes);
-    const generated_data = [
-      {
-        name: "tier",
-        value: `${tier}`,
-      },
-      {
-        name: "application_number",
-        value: new_record._id,
-      },
-    ];
+    const current_record = query_result.data;
+    if (current_record.length > 0) {
+      //has existing record --> update credential
+      console.log(
+        `Here is the current record :${JSON.stringify(current_record)}`
+      );
+      const credential_revoke_info = {
+        revoc_reg_id: current_record[0].cred_exchange_data.revoc_reg_id,
+        revocation_id: current_record[0].cred_exchange_data.revocation_id,
+        publish: publish_now,
+      };
+      console.log(
+        `Here is the revok info :${JSON.stringify(credential_revoke_info)}`
+      );
+      const revoke_response = await this.app.service("aries-agent").create({
+        service: ServiceType.CredEx,
+        action: ServiceAction.Revoke,
+        data: credential_revoke_info,
+      });
+
+      console.log(
+        `Successfully revoke for : ${this.util.inspect(
+          current_record
+        )} with repsonse: ${this.util.inspect(revoke_response)}`
+      );
+
+      generated_data = [
+        {
+          name: "tier",
+          value: `${tier}`,
+        },
+        {
+          name: "application_number",
+          value: current_record[0].application_number,
+        },
+      ];
+    } else {
+      //brand new record
+      const new_record = await this.app
+        .service("user")
+        .create({ connection_id: data.connection_id });
+      console.log(`NEW RECORDDDDDDDDDDD: ${JSON.stringify(new_record)}`);
+      generated_data = [
+        {
+          name: "tier",
+          value: `${tier}`,
+        },
+        {
+          name: "application_number",
+          value: new_record._id,
+        },
+      ];
+    }
 
     const attributes_with_extra_info: any = [...attributes, ...generated_data];
     const credentialOffer = formatCredentialOffer(
