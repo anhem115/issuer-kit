@@ -4,7 +4,7 @@ import {
   ServiceSwaggerOptions,
 } from "feathers-swagger/types";
 import { Application } from "../../declarations";
-import { Claim, UserInfo, UserCredentialInfo } from "../../models/credential";
+import { Claim } from "../../models/credential";
 import { CredDefServiceResponse } from "../../models/credential-definition";
 import {
   AriesCredentialAttribute,
@@ -12,11 +12,15 @@ import {
   CredExServiceResponse,
 } from "../../models/credential-exchange";
 import { ServiceAction, ServiceType } from "../../models/enums";
-import { formatCredentialOffer } from "../../utils/credential-exchange";
+import {
+  formatCredentialOffer,
+  tierChecker,
+} from "../../utils/credential-exchange";
 import {
   updateInviteRecord,
   getCredentialExchangeInfo,
 } from "../../utils/issuer-invite";
+const { ObjectID } = require("mongodb");
 
 interface Data {
   token?: string;
@@ -45,21 +49,32 @@ export class CredentialExchange implements ServiceSwaggerAddon {
     });
   }
 
-  async update(data: any, params?: Params): Promise<CredExServiceResponse> {
+  async update(
+    id: Id,
+    data: any,
+    params?: Params
+  ): Promise<CredExServiceResponse> {
     //get the cred exchange id
-    const credential_info = (await getCredentialExchangeInfo(
-      // {
-      //   "credExchangeData.credential_exchange_id": cred_exchange_id,
-      // },
-      {
-        application_number: data.application_number,
-      },
-      this.app
-    )) as UserCredentialInfo;
-    console.log(`data in mongo: ${JSON.stringify(credential_info)}`);
+    // const credential_info = (await getCredentialExchangeInfo(
+    //   // {
+    //   //   "credExchangeData.credential_exchange_id": cred_exchange_id,
+    //   // },
+    //   {
+    //     application_number: data.application_number,
+    //   },
+    //   this.app
+    // )) as any;
+    // const application_number = data.application_number;
+    const connection_id = data.connection_id;
+    const publish = true;
+    const user_info = await this.app
+      .service("user")
+      .patch(ObjectID(id), { connection_id: connection_id });
+    console.log(`data in mongo after update: ${JSON.stringify(user_info)}`);
     const credential_revoke_info = {
-      revoc_reg_id: credential_info.credential_exchange_data.revoc_reg_id,
-      revocation_id: credential_info.credential_exchange_data.revocation_id,
+      revoc_reg_id: user_info.cred_exchange_data.revoc_reg_id,
+      revocation_id: user_info.cred_exchange_data.revocation_id,
+      publish: publish,
     };
     const revoke_response = await this.app.service("aries-agent").create({
       service: ServiceType.CredEx,
@@ -67,28 +82,35 @@ export class CredentialExchange implements ServiceSwaggerAddon {
       data: credential_revoke_info,
     });
 
-    console.log(
-      `Successfully revoke for : ${this.util.inspect(credential_info)}`
-    );
+    console.log(`Successfully revoke for : ${this.util.inspect(user_info)}`);
 
     console.log("Start issuing a new credential!!!!!!!!!");
-    //check the tier of the info
     const comment = this.app.get("issuer").offerComment;
-    let attributes: any = Object.keys(data).forEach(
+    let attributes = data.claims.map(
       (claim: any) =>
         ({
-          name: claim,
-          value: data[claim],
+          name: claim.name,
+          value: claim.value,
         } as AriesCredentialAttribute)
     );
-    //get cred def id from the cred exchange data
-    const cred_def_id =
-      credential_info.credential_exchange_data.credential_definition_id;
+    const cred_def_id = user_info.cred_exchange_data.cred_definition_id;
+    const tier = tierChecker(attributes);
+    const generated_data = [
+      {
+        name: "tier",
+        value: "1",
+      },
+    ];
+
+    const attributes_with_extra_info: any = [...attributes, ...generated_data];
+    console.log(
+      `After replace the tier: ${JSON.stringify(attributes_with_extra_info)}`
+    );
     const credentialOffer = formatCredentialOffer(
       data.connection_id,
       comment,
-      attributes,
-      cred_def_id
+      attributes_with_extra_info,
+      cred_def_id.credential_definition_id
     ) as AriesCredentialOffer;
 
     const newCredEx = (await this.app.service("aries-agent").create({
@@ -134,10 +156,27 @@ export class CredentialExchange implements ServiceSwaggerAddon {
         )
       )) as CredDefServiceResponse;
 
+    const new_record = await this.app
+      .service("user")
+      .create({ connection_id: data.connection_id });
+    console.log(`NEW RECORDDDDDDDDDDD: ${JSON.stringify(new_record)}`);
+    const tier = tierChecker(attributes);
+    const generated_data = [
+      {
+        name: "tier",
+        value: `${tier}`,
+      },
+      {
+        name: "application_number",
+        value: new_record._id,
+      },
+    ];
+
+    const attributes_with_extra_info: any = [...attributes, ...generated_data];
     const credentialOffer = formatCredentialOffer(
       data.connection_id,
       comment,
-      attributes,
+      attributes_with_extra_info,
       cred_def_id.credential_definition_id
     ) as AriesCredentialOffer;
 

@@ -208,6 +208,9 @@ export class AriesAgent {
     credential_definition_id: string
   ): Promise<CredExServiceResponse> {
     //need to check for active-registry, and creat new revocation registry before issuing
+    console.log(
+      `Check for revocation registry space for: ${credential_definition_id}`
+    );
     await this.checkForRevocationRegistrySpace(credential_definition_id);
     const url = `${this.agent.adminUrl}/issue-credential/records/${credential_exchange_id}/issue`;
     console.log(
@@ -229,6 +232,8 @@ export class AriesAgent {
       state: credExData.state,
       revocation_id: credExData.revocation_id,
       revoc_reg_id: credExData.revoc_reg_id,
+      cred_exchange_id: credExData.credential_exchange_id,
+      cred_definition_id: credExData.credential_definition_id,
     } as CredExServiceResponse;
   }
 
@@ -238,7 +243,7 @@ export class AriesAgent {
     );
     const revocation_id = credential_revok_info.revocation_id;
     const revoc_reg_id = credential_revok_info.revoc_reg_id;
-    const publish_now = true;
+    const publish_now = credential_revok_info.publish;
     const url = `${this.agent.adminUrl}/issue-credential/revoke?$rev_reg_id=${revoc_reg_id}&revocation_id=${revocation_id}&publish=${publish_now}`;
     const response = await Axios.post(url, {}, this.getRequestConfig());
     return response;

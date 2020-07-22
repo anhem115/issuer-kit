@@ -15,6 +15,7 @@ import {
 } from "../../utils/issuer-invite";
 import { AriesCredentialAttribute } from "../../models/credential-exchange";
 import { tierChecker } from "../../utils/credential-exchange";
+const { ObjectID } = require("mongodb");
 
 interface Data {
   state?: CredExState;
@@ -32,6 +33,7 @@ interface Proof {
   connection_id?: string;
   presentation_exchange_id?: string;
   verified?: string;
+  presentation?: any;
 }
 
 interface VerifyPresentation {
@@ -134,6 +136,7 @@ export class Webhooks {
     // );
 
     if (state === ProofRequestState.Verfied) {
+      console.log(`Verified proof date: ${JSON.stringify(data)}`);
       const query = (await this.app.service("proof").find({
         query: {
           connection_id: data.connection_id,
@@ -146,8 +149,25 @@ export class Webhooks {
         .update(foundData._id, data)
         .then(() => console.log("Success"))
         .catch((error) => console.log(error));
-    }
+      //update current connection id to the related user data if proof is correct
 
+      if (data.verified == "true") {
+        console.log("CORRECT PROOF");
+        const application_number =
+          data.presentation.requested_proof.revealed_attrs[
+            "0_application_number_uuid"
+          ].raw;
+        const connection_id = data.connection_id;
+
+        this.app
+          .service("user")
+          .patch(ObjectID(application_number), {
+            connection_id: connection_id,
+          })
+          .then(() => console.log("Success replace connection id"))
+          .catch((error) => console.log(error));
+      }
+    }
     if (state === ProofRequestState.PresentationReceived) {
       const proof = await this.app.service("aries-agent").create({
         service: ServiceType.ProofReq,
@@ -166,20 +186,24 @@ export class Webhooks {
         const attributes = data.credential_proposal_dict?.credential_proposal
           ?.attributes as AriesCredentialAttribute[];
         //need to add the credential exchange id (application_number) and tier value
-        const tier = tierChecker(attributes);
-        const generated_data = [
-          {
-            name: "tier",
-            value: tier,
-          },
-          {
-            name: "application_number",
-            value: data.credential_exchange_id,
-          },
-        ];
+        // const tier = tierChecker(attributes);
+        // const generated_data = [
+        //   {
+        //     name: "tier",
+        //     value: tier,
+        //   },
+        //   {
+        //     name: "application_number",
+        //     value: data.credential_exchange_id,
+        //   },
+        // ];
 
-        const attributes_with_extra_info = [...attributes, ...generated_data];
+        // const attributes_with_extra_info = [...attributes, ...generated_data];
 
+        console.log(`all data from webhook: ${this.util.inspect(data)}`);
+        console.log(
+          `all attributes from webhook: ${this.util.inspect(attributes)}`
+        );
         const cred_exchange_data = await this.app
           .service("aries-agent")
           .create({
@@ -187,38 +211,36 @@ export class Webhooks {
             action: ServiceAction.Issue,
             data: {
               credential_exchange_id: data.credential_exchange_id,
-              credential_defnition_id: data.credential_definition_id,
-              attributes: attributes_with_extra_info,
+              attributes: attributes,
+              credential_definition_id: data.credential_definition_id,
             },
           });
-        console.log(
-          `all data: ${this.util.inspect(attributes_with_extra_info)}`
-        );
         let cred_data: any = {};
-        attributes_with_extra_info.forEach((data: any) => {
+        attributes.forEach((data: any) => {
           cred_data[data["name"]] = data["value"];
         });
         cred_data["cred_exchange_data"] = cred_exchange_data;
         cred_data["connection_id"] = data.connection_id;
-        const response = await this.app.service("user").create({
-          ...cred_data,
-        });
-        // await storeCredentialExchangeInfo(
-        //   {
-        //     ...cred_data,
+        //find the current record
+        // const user_id = (await this.app.service("user").find({
+        //   query: {
+        //     _id: ObjectID(cred_data.application_number),
         //   },
-        //   this.app
-        // );
-        console.log(`all attributes: ${this.util.inspect(cred_data)}`);
+        //   paginate: false,
+        // })) as string[];
+        //
+        const response = await this.app
+          .service("user")
+          .update(ObjectID(cred_data.application_number), {
+            ...cred_data,
+          });
+        console.log(`all attributes in mongo: ${this.util.inspect(cred_data)}`);
         return { result: "Success" };
       case CredExState.Issued:
-        console.log(
-          `Credential issued for cred_ex_id ${data.credential_exchange_id}`
-        );
+        console.log(`Data from webhook issued ${JSON.stringify(data)}`);
         //this.app.service("user").update({})
         const query = (await this.app.service("user").find({
           query: {
-            application_number: data.credential_exchange_id,
             connection_id: data.connection_id,
           },
           paginate: false,
@@ -237,6 +259,7 @@ export class Webhooks {
         return { result: "Success" };
       case CredExState.OfferSent:
         console.log(`Offer send for data: ${this.util.inspect(data)} `);
+        return { result: "Success" };
       default:
         console.warn(
           `Received unexpected state ${data.state} for cred_ex_id ${data.credential_exchange_id}`
