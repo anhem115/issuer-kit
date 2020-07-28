@@ -1,26 +1,24 @@
 // Initializes the `user` service on path `/user`
-import { ServiceAddons } from '@feathersjs/feathers';
-import { Application } from '../../declarations';
-import { User } from './user.class';
-import hooks from './user.hooks';
+import { ServiceAddons } from "@feathersjs/feathers";
+import { Application } from "../../declarations";
+import { User } from "./user.class";
+import hooks from "./user.hooks";
 
 // Add this service to the service type index
-declare module '../../declarations' {
+declare module "../../declarations" {
   interface ServiceTypes {
-    'user': User & ServiceAddons<any>;
+    user: User & ServiceAddons<any>;
   }
 }
 
 export default function (app: Application) {
-  const options = {
-    paginate: app.get('paginate')
-  };
+  const options = {};
 
   // Initialize our service with any options it requires
-  app.use('/user', new User(options, app));
+  app.use("/user", new User(options, app));
 
   // Get our initialized service so that we can register hooks
-  const service = app.service('user');
+  const service = app.service("user");
 
   service.hooks(hooks);
 }

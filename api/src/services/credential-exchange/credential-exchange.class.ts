@@ -166,7 +166,7 @@ export class CredentialExchange implements ServiceSwaggerAddon {
     let generated_data: any = [];
     const tier = tierChecker(attributes);
     const current_record = query_result.data;
-    if (current_record.length > 0) {
+    if (current_record !== undefined && current_record.length > 0) {
       //has existing record --> update credential
       console.log(
         `Here is the current record :${JSON.stringify(current_record)}`
