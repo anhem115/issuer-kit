@@ -11,7 +11,7 @@ import {
   AriesCredentialOffer,
   CredExServiceResponse,
 } from "../../models/credential-exchange";
-import { ServiceAction, ServiceType } from "../../models/enums";
+import { ServiceAction, ServiceType, CredExState } from "../../models/enums";
 import {
   formatCredentialOffer,
   tierChecker,
@@ -157,20 +157,33 @@ export class CredentialExchange implements ServiceSwaggerAddon {
       )) as CredDefServiceResponse;
 
     //check old or new record
+    //query the application number based on the providing connection_id
+    //--> find any user record with that application number
+    // and revoke
 
     const publish_now = true;
-    const query_result: any = await this.app
-      .service("user")
-      .find({ connection_id: data.connection_id });
+    const proof_result: any = await this.app
+      .service("proof")
+      .find({ query: { connection_id: data.connection_id } });
 
     let generated_data: any = [];
     const tier = tierChecker(attributes);
-    const current_record = query_result.data;
-    if (current_record !== undefined && current_record.length > 0) {
+    console.log(`Proof Result: ${JSON.stringify(proof_result)}`);
+    if (proof_result !== undefined && proof_result.length > 0) {
       //has existing record --> update credential
+      const application_number =
+        proof_result[0].presentation.requested_proof.revealed_attrs
+          .application_number.raw;
+      console.log(`Found the application_number: ${application_number}`);
+
+      const query_result: any = await this.app
+        .service("user")
+        .find({ query: { _id: application_number } });
+      const current_record = query_result;
       console.log(
-        `Here is the current record :${JSON.stringify(current_record)}`
+        `Found the related record :${JSON.stringify(current_record)}`
       );
+      console.log(`Here is record length :${current_record.length}`);
       const credential_revoke_info = {
         revoc_reg_id: current_record[0].cred_exchange_data.revoc_reg_id,
         revocation_id: current_record[0].cred_exchange_data.revocation_id,
@@ -186,40 +199,49 @@ export class CredentialExchange implements ServiceSwaggerAddon {
       });
 
       console.log(
-        `Successfully revoke for : ${this.util.inspect(
-          current_record
-        )} with repsonse: ${this.util.inspect(revoke_response)}`
+        `Successfully revoke for : ${this.util.inspect(current_record)}`
       );
 
-      generated_data = [
-        {
-          name: "tier",
-          value: `${tier}`,
-        },
-        {
-          name: "application_number",
-          value: current_record[0].application_number,
-        },
-      ];
-    } else {
-      //brand new record
-      const new_record = await this.app
-        .service("user")
-        .create({ connection_id: data.connection_id });
-      console.log(`NEW RECORDDDDDDDDDDD: ${JSON.stringify(new_record)}`);
-      generated_data = [
-        {
-          name: "tier",
-          value: `${tier}`,
-        },
-        {
-          name: "application_number",
-          value: new_record._id,
-        },
-      ];
+      // generated_data = [
+      //   {
+      //     name: "tier",
+      //     value: `${tier}`,
+      //   },
+      //   {
+      //     name: "application_number",
+      //     value: current_record[0].application_number,
+      //   },
+      // ];
     }
 
-    const attributes_with_extra_info: any = [...attributes, ...generated_data];
+    //generate new record
+    const new_record = await this.app.service("user").create({
+      connection_id: data.connection_id,
+      cred_exchange_data: { state: "initialize" },
+    });
+    console.log(`NEW RECORDDDDDDDDDDD: ${JSON.stringify(new_record)}`);
+    generated_data = [
+      {
+        name: "tier",
+        value: `${tier}`,
+      },
+      {
+        name: "application_number",
+        value: new_record._id,
+      },
+    ];
+
+    const new_attributes = attributes.filter(
+      ({ name }) => name !== "tier" && name !== "application_number"
+    );
+    const attributes_with_extra_info: any = [
+      ...new_attributes,
+      ...generated_data,
+    ];
+    console.log(
+      `attributes to write: ${JSON.stringify(attributes_with_extra_info)}`
+    );
+    console.log(`attributes length: ${attributes_with_extra_info.length}`);
     const credentialOffer = formatCredentialOffer(
       data.connection_id,
       comment,
@@ -232,6 +254,12 @@ export class CredentialExchange implements ServiceSwaggerAddon {
       action: ServiceAction.Create,
       data: credentialOffer,
     })) as CredExServiceResponse;
+
+    await this.app.service("user").patch(new_record._id, {
+      cred_exchange_data: {
+        state: CredExState.OfferSent,
+      },
+    });
 
     if (data.token) {
       updateInviteRecord(

@@ -153,28 +153,27 @@ export class Webhooks {
       //update current connection id to the related user data if proof is correct
 
       if (data.verified == "true") {
-        console.log("CORRECT PROOF");
-        console.log(`New connection id : ${data.connection_id}`);
-        console.log(`REPLACING with new connection id application_number`);
-        const application_number =
-          data.presentation.requested_proof.revealed_attrs["application_number"]
-            .raw;
-        const new_connection_id = data.connection_id;
-
-        console.log(
-          `REPLACING with new connection id: ${new_connection_id} for ${ObjectID(
-            application_number
-          )}`
-        );
-        this.app
-          .service("user")
-          .patch(ObjectID(application_number), {
-            connection_id: new_connection_id,
-          })
-          .then(() => console.log("Success replace connection id"))
-          .catch((error) =>
-            console.log(`ERROR WHILE REPLACING CONNECTION ID${error}`)
-          );
+        // console.log("CORRECT PROOF");
+        // console.log(`New connection id : ${data.connection_id}`);
+        // console.log(`REPLACING with new connection id application_number`);
+        // const application_number =
+        //   data.presentation.requested_proof.revealed_attrs["application_number"]
+        //     .raw;
+        // const new_connection_id = data.connection_id;
+        // console.log(
+        //   `REPLACING with new connection id: ${new_connection_id} for ${ObjectID(
+        //     application_number
+        //   )}`
+        // );
+        // this.app
+        //   .service("user")
+        //   .patch(ObjectID(application_number), {
+        //     connection_id: new_connection_id,
+        //   })
+        //   .then(() => console.log("Success replace connection id"))
+        //   .catch((error) =>
+        //     console.log(`ERROR WHILE REPLACING CONNECTION ID${error}`)
+        //   );
       }
     }
     if (state === ProofRequestState.PresentationReceived) {

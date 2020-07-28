@@ -79,7 +79,8 @@ export function tierChecker(attributes: any) {
   let tier_2_count = 0;
   let tier_3_count = 0;
   attributes.forEach((info: any) => {
-    if (info.value.trim() != "") {
+    console.log(`current info : ${JSON.stringify(info)}`);
+    if (info.value.toString().trim() != "") {
       if (TIER_1.includes(info.name)) {
         tier_1_count++;
       }
