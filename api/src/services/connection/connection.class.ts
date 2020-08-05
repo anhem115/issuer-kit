@@ -41,7 +41,7 @@ export class Connection implements ServiceSwaggerAddon {
       data: {},
     })) as AriesInvitation;
     const dumpValue = await this.app
-      .service("connection-test")
+      .service("connection-record")
       .create({
         connection_id: this.ariesInvitation.connection_id,
         state: "invitation",

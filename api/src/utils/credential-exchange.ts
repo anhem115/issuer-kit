@@ -43,9 +43,7 @@ export function formatCredentialPreview(
 export function tierChecker(attributes: any) {
   const TIER_1 = [
     "first_name",
-    "middle_name",
     "last_name",
-    "other_name",
     "phone_number",
     "email",
     "home_address",

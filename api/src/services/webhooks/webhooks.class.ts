@@ -82,7 +82,7 @@ export class Webhooks {
 
   private async handleConnection(data: Data): Promise<any> {
     console.log(`data: ${this.util.inspect(data)}`);
-    const query = (await this.app.service("connection-test").find({
+    const query = (await this.app.service("connection-record").find({
       query: {
         connection_id: data.connection_id,
       },
@@ -91,14 +91,14 @@ export class Webhooks {
     console.log(`Before: ${this.util.inspect(query)}`);
     const foundData = query[0] as Data;
     await this.app
-      .service("connection-test")
+      .service("connection-record")
       .update(foundData._id, {
         connection_id: data.connection_id,
         state: data.state,
       })
       .then(() => console.log("Success"))
       .catch((error) => console.log(error));
-    const afterquery = (await this.app.service("connection-test").find({
+    const afterquery = (await this.app.service("connection-record").find({
       query: {
         connection_id: data.connection_id,
       },
