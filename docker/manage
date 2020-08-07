@@ -153,8 +153,8 @@ EOF
 DEFAULT_CONTAINERS="db agent wallet keycloak keycloak-db maildev"
 PROD_CONTAINERS="api issuer-admin issuer-web"
 DEV_CONTAINERS="api-dev issuer-admin-dev issuer-web-dev"
-MY_CONTAINERS="api-dev issuer-admin issuer-web"
-MYDEV_CONTAINERS="api-dev"
+MY_CONTAINERS="api tails-server"
+MYDEV_CONTAINERS="api-dev tails-server"
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
 # -----------------------------------------------------------------------------------------------------------------
@@ -184,9 +184,9 @@ build-issuer-web() {
 }
 
 build-all() {
-  # build-api
+  build-api
   # build-issuer-admin
-  build-issuer-web
+  # build-issuer-web
 }
 
 configureEnvironment() {
@@ -305,6 +305,8 @@ configureEnvironment() {
     export PUBLIC_SITE_URL=http://localhost:4251
   fi
   export EMAIL_SUBJECT=${EMAIL_SUBJECT:-"Issuer Kit Invite"}
+
+  
 }
 
 getInputParams() {
@@ -451,19 +453,25 @@ case "${COMMAND}" in
     isJQInstalled
     isCurlInstalled
 
-    export AGENT_WEBHOOK_URL="http://api-dev:5000/webhooks"
+    export AGENT_WEBHOOK_URL="http://api:5000/webhooks"
     export LEDGER_URL="http://test.bcovrin.vonx.io"
+    # tails-server
+    export GENESIS_URL=${GENESIS_URL:-http://$DOCKERHOST:9000/genesis}
+    export STORAGE_PATH=${STORAGE_PATH:-/tmp/tails-files}
+    export LOG_LEVEL=${LOG_LEVEL:-INFO}
+    export TAILS_SERVER_URL=${TAILS_SERVER_URL:-http://$DOCKERHOST:6543}
     # export PUBLIC_TAILS_URL=https://0030b864bfdb.ngrok.io
-    if [ -z "$NGROK_AGENT_ENDPOINT" ]; then
-      isNgrokInstalled
-      export NGROK_AGENT_ENDPOINT=$(${CURL_EXE} http://localhost:4040/api/tunnels | ${JQ_EXE} --raw-output '.tunnels | map(select(.name | contains("issuer-agent"))) | .[0] | .public_url')
-    fi
+    # if [ -z "$NGROK_AGENT_ENDPOINT" ]; then
+    #   isNgrokInstalled
+    #   export NGROK_AGENT_ENDPOINT=$(${CURL_EXE} http://localhost:4040/api/tunnels | ${JQ_EXE} --raw-output '.tunnels | map(select(.name | contains("issuer-agent"))) | .[0] | .public_url')
+    # fi
 
-    checkNgrokTunnelActive
+    # checkNgrokTunnelActive
     echo "Running in demo mode, will use ${LEDGER_URL} as ledger and ${NGROK_AGENT_ENDPOINT} as the agent endpoint."
     configureEnvironment "$@"
     customizeKeycloakConfig
     docker-compose up -d ${_startupParams} ${DEFAULT_CONTAINERS} ${MY_CONTAINERS}
+    # docker-compose up -d ${_startupParams} ${MYDEV_CONTAINERS}
     docker-compose logs -f
     ;;
   stop)

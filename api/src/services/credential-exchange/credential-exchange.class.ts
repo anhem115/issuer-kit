@@ -229,10 +229,16 @@ export class CredentialExchange implements ServiceSwaggerAddon {
         name: "application_number",
         value: new_record._id,
       },
+      {
+        name: "timestamp",
+        value: `${Math.ceil(new Date().getTime() / 1000)}`,
+        //TODO handle Khue map then add the timestamp
+      },
     ];
 
     const new_attributes = attributes.filter(
-      ({ name }) => name !== "tier" && name !== "application_number"
+      ({ name }) =>
+        name !== "tier" && name !== "application_number" && name !== "timestamp"
     );
     const attributes_with_extra_info: any = [
       ...new_attributes,

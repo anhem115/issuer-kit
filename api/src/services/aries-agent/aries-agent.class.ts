@@ -452,7 +452,7 @@ export class AriesAgent {
       .then((data) => data)
       .catch((thrown) => {
         console.log(
-          `XXXX: publish the tail file to the tail file server ${this.util.inspect(
+          `XXXX: publish the tail file to the tail file server error ${this.util.inspect(
             thrown
           )}`
         );
