@@ -1,0 +1,18 @@
+<div *ngIf="test$ | async; let test">
+    <div *ngIf="test.length == 1">
+        <div *ngIf="test[0].state == 'invitation'; then qrCodeBox; else connBox"></div>
+        <ng-template #qrCodeBox>
+            <qrcode *ngIf="invitation_url" [qrdata]="invitation_url" [errorCorrectionLevel]="'H'"></qrcode>
+            <app-button-box [external]="invitation_url" icon="fas fa-qrcode" title="Open your digital wallet">
+            </app-button-box>
+        </ng-template>
+
+        <ng-template #connBox>
+            {{hideClose()}}
+            <div *ngIf="test[0].state == 'response' || test[0].state == 'active' ; then testBox"></div>
+            <ng-template #testBox>
+                <app-proof-presentation [connection_id]="this.connection_id"></app-proof-presentation>
+            </ng-template>
+        </ng-template>
+    </div>
+</div>

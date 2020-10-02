@@ -1,0 +1,29 @@
+<a *ngIf="link && !external" [routerLink]="link" class="cv-btn mx-auto {{color}} mb-3">
+    <div *ngIf="icon" class="cv-btn-icon">
+        <i class="{{icon}} {{icon_color}}"></i>
+    </div>
+    <div class="cv-btn-text pl-1">
+        <h6>{{title}}</h6>
+        <p *ngIf="text">{{text}}</p>
+    </div>
+</a>
+
+<a *ngIf="!link && external" href="{{external}}" class="cv-btn mx-auto {{color}} mb-3">
+    <div *ngIf="icon" class="cv-btn-icon">
+        <i class="{{icon}} {{icon_color}}"></i>
+    </div>
+    <div class="cv-btn-text pl-1">
+        <h6>{{title}}</h6>
+        <p *ngIf="text">{{text}}</p>
+    </div>
+</a>
+
+<a *ngIf="!link && !external" class="cv-btn mx-auto {{color}} mb-3">
+    <div *ngIf="icon" class="cv-btn-icon">
+        <i class="{{icon}} {{icon_color}}"></i>
+    </div>
+    <div class="cv-btn-text pl-1">
+        <h6>{{title}}</h6>
+        <p *ngIf="text">{{text}}</p>
+    </div>
+</a>

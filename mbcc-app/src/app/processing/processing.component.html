@@ -1,0 +1,43 @@
+<app-navigation></app-navigation>
+<section class="container">
+    <div class="row">
+        <div class="col-12 col-md-8 mx-auto">
+            <ng-container *ngIf="!header">
+                <h1>Now we need a connection</h1>
+                <h5>Please scan the QR code with your wallet, so we can issue the credentials to that wallet.</h5>
+            </ng-container>
+            <ng-container *ngIf="header">
+                <h1>Issuing your credentials</h1>
+                <h5>We are issuing a new set of credentials with your information. Please remember that the previous one
+                    will be <strong>revocated.</strong> To avoid problems when presenting them, please delete the
+                    previous credential from your wallet.</h5>
+            </ng-container>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-8">
+            <app-tier-level [tier]="tierLevel"></app-tier-level>
+        </div>
+
+        <div *ngIf="test$ | async; let test" class="col-12 col-md-4">
+            <div *ngIf="test.length == 1">
+                <div *ngIf="test[0].state == 'invitation'; then qrCodeBox; else connBox"></div>
+                <ng-template #qrCodeBox>
+                    <qrcode [qrdata]="invitation_url" [errorCorrectionLevel]="'H'"></qrcode>
+                    <app-button-box [external]="invitation_url" icon="fas fa-qrcode" title="Open your digital wallet">
+                    </app-button-box>
+                </ng-template>
+
+                <ng-template #connBox>
+                    <div *ngIf="test[0].state == 'response' || test[0].state == 'active' ; then testBox"></div>
+                    <ng-template #testBox>
+                        <div>app-issue-credential</div>
+                        <!-- {{navigateToPage()}} -->
+                        <app-issue-credential (onIssuing)="updateHeader($event)"></app-issue-credential>
+                        <!-- <app-proof-presentation [connection_id]="test[0].connection_id"></app-proof-presentation> -->
+                    </ng-template>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</section>

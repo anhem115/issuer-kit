@@ -1,0 +1,51 @@
+<div class="row">
+    <!-- {{tierLevel}} -->
+    <ng-template [ngIf]="tierLevel == 1">
+        <div class="mb-tier-levels  col-12 col-md-4">
+            <h2>TIER 1</h2>
+            <h6>INCLUDES:</h6>
+            <ul>
+                <li *ngFor="let item of tier_one_fields">{{item}}</li>
+            </ul>
+        </div>
+    </ng-template>
+    <ng-template [ngIf]="tierLevel == 2">
+        <div class="mb-tier-levels  col-12 col-md-4">
+            <h2>TIER 1</h2>
+            <h6>INCLUDES:</h6>
+            <ul>
+                <li *ngFor="let item of tier_one_fields">{{item}}</li>
+            </ul>
+        </div>
+        <div class="mb-tier-levels  col-12 col-md-4">
+            <h2>TIER 2</h2>
+            <h6>INCLUDES:</h6>
+            <ul>
+                <li *ngFor="let item of tier_two_fields">{{item}}</li>
+            </ul>
+        </div>
+    </ng-template>
+    <ng-template [ngIf]="tierLevel == 3">
+        <div class="mb-tier-levels  col-12 col-md-4">
+            <h2>TIER 1</h2>
+            <h6>INCLUDES:</h6>
+            <ul>
+                <li *ngFor="let item of tier_one_fields">{{item}}</li>
+            </ul>
+        </div>
+        <div class="mb-tier-levels  col-12 col-md-4">
+            <h2>TIER 2</h2>
+            <h6>INCLUDES:</h6>
+            <ul>
+                <li *ngFor="let item of tier_two_fields">{{item}}</li>
+            </ul>
+        </div>
+        <div class="mb-tier-levels  col-12 col-md-4">
+            <h2>TIER 3</h2>
+            <h6>INCLUDES:</h6>
+            <ul>
+                <li *ngFor="let item of tier_three_fields">{{item}}</li>
+            </ul>
+        </div>
+    </ng-template>
+</div>

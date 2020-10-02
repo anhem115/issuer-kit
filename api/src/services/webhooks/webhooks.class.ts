@@ -184,7 +184,10 @@ export class Webhooks {
           presentation_exchange_id: data.presentation_exchange_id,
         },
       });
-      console.log("Proof =", this.util.inspect(proof));
+      console.log(
+        "Proof =",
+        this.util.inspect(proof.presentation.requested_proof.revealed_attrs)
+      );
     }
   }
 

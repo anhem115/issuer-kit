@@ -1,0 +1,12 @@
+<div *ngIf="test$ | async; let test">
+    <div *ngIf="test.length== 0">
+        <qrcode *ngIf="invitation_url" [qrdata]="invitation_url" [width]="400" [errorCorrectionLevel]="'L'"></qrcode>
+        <app-button-box [external]="invitation_url" icon="fas fa-qrcode" title="Open your digital wallet">
+        </app-button-box>
+    </div>
+    <div *ngIf="test.length> 0">
+        <div *ngIf="test[0].state == 'response'">
+            {{navigateToConnection()}}
+        </div>
+    </div>
+</div>

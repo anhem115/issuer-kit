@@ -1,0 +1,11 @@
+<div class="alert alert-{{type}} col-12 mb-alerts d-flex justify-content-between">
+    <div class="mb-alert-text">
+        <h4><i class="fas fa-{{icon}} mr-2"></i><strong>{{title}}</strong></h4>
+        <p>
+            {{msg}}
+        </p>
+    </div>
+    <div *ngIf="!disabled"  class="">
+        <button class="btn btn-primary mb-alert-btn" (click)="confirmDataValidation()">Confirm</button>
+    </div>
+</div>

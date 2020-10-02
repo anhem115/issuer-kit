@@ -1,0 +1,16 @@
+<footer class="container-fluid p-4 d-flex flex-column flex-sm-row justify-content-between align-items-center">
+    <div class="cv-logo-white mb-2 mb-sm-0">
+        <picture>
+            <source media="(max-width: 576px)" srcset="/assets/images/logo_manitoba_white_s.png">
+            <source media="(min-width: 992px)" srcset="/assets/images/logo_manitoba_white_m.png">
+            <img id="cv-logo" src="/assets/images/logo_manitoba_white_s.png" alt="Logo Government of Manitoba">
+        </picture>
+    </div>
+    <div class="mx-auto mx-sm-0 ml-sm-auto d-flex align-items-center ">
+        <ul class="list-inline">
+            <li *ngFor="let link of links" class="list-inline-item pr-2">
+                <a [routerLink]="link.link">{{link.text}}</a>
+            </li>
+        </ul>
+    </div>
+</footer>

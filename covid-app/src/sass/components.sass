@@ -1,0 +1,290 @@
+$green_light: #27a348
+$green_medium: #1D8738
+$green_dark: #0F3E1B
+
+$grey_light: #ECEFF1
+$grey_dark: #263238
+
+$white: #FFF
+$red: #DD4B39
+$blue: #3B5998
+
+$font_mont: 'Montserrat', sans-serif
+$font_open: 'Open Sans', sans-serif
+$font_lato: 'Lato', sans-serif
+
+$shadow: 0px 4px 4px rgba(0, 0, 0, 0.15)
+$transitions: all ease-in-out .2s
+
+$break_mobile: 575.98px
+$break_landscape: 767.98px
+$break_tablets: 991.98px
+$break_desktops: 1199.98px
+
+@mixin h1_style($color)
+    font-weight: 600
+    font-size: 28px
+    color: $color
+
+@mixin h2_style($color)
+    font-weight: 600
+    font-size: 26px
+    color: $color
+
+@mixin p_style($color)
+    color: $color
+    font-family: $font_open
+    font-size: 14px
+
+// General styles
+html, body
+    height: 100%
+
+h1, h2, h3, h4, h5, h6
+    font-family: $font_mont
+
+h1
+    @include h1_style($grey_dark)
+h2
+    @include h2_style($grey_dark)
+p
+    @include p_style($grey_dark)
+
+nav
+    border-bottom: 4px solid $green_light
+    background-color: transparent
+
+// Specific boxes
+.cv-dark-box
+    background-color: $grey_dark
+    h1, h2, h3, h4, h5, h6
+        color: $green_light
+    h2
+        @include h2_style($green_light)
+        @media screen and ( min-width: $break_desktops )
+            font-size: 34px
+    p
+        @include p_style($white)
+        @media screen and ( min-width: $break_desktops )
+            font-size: 18px
+
+.cv-light-box
+    background-color: $grey_light
+    box-shadow: $shadow
+
+    h1
+        @include h1_style($green_light)
+        &.cv-money
+            font-size: 38px
+
+    h2
+        @include h2_style($grey_dark)
+    p
+        @include p_style($grey_dark)
+
+.cv-white-box
+    background-color: $white
+    transition: $transitions
+    text-align: center
+    h2
+        @include h2_style($green_light)
+    p
+        @include p_style($grey_dark)
+    h6
+        color: $green_light
+        font-size: 14px
+        font-weight: bolder
+
+.cv-address
+    text-align: left
+    p
+        margin-bottom: 0
+        font-size: 18px
+        font-weight: bolder
+
+.cv-btn-simple
+    background-color: $green_light
+    color: $white
+    font-weight: bold
+    padding: .8rem 1.2rem
+    &:hover
+        background-color: lighten($green_light,4)
+        color: $white
+
+.cv-btn-transparent
+    color: $green_dark
+    padding: .8rem 1.2rem .8rem 0
+    font-weight: bold
+    transition: $transitions
+    font-size: 18px
+    i
+        color: $green_light
+    &:hover
+        color: $green_light
+
+.cv-btn
+    padding: 0.8em 1.2em
+    background-color: $green_light
+    display: flex
+    justify-content: flex-end
+    align-content: center
+    position: relative
+    box-shadow: $shadow
+    // width: fit-content
+    border: 0
+    transition: $transitions
+    width: 90%
+    max-width: 320px
+    @media screen and (min-width: $break_tablets)
+        width: 280px
+
+    &.green
+        background-color: $green_light
+        &:hover
+            background-color: lighten($green_light,4)
+            .cv-btn-icon
+                background-color: transparentize($green_medium,.5)
+    &.white
+        background-color: $white
+        .cv-btn-icon
+            background-color: transparent
+        &:hover
+            background-color: lighten($white,4)
+            .cv-btn-icon
+                background-color: transparent
+    &.red
+        background-color: $red
+        .cv-btn-icon
+            background-color: transparent
+        &:hover
+            background-color: lighten($red,8)
+            .cv-btn-icon
+                background-color: transparent
+    &.blue
+        background-color: $blue
+        .cv-btn-icon
+            background-color: transparent
+        &:hover
+            background-color: lighten($blue,8)
+            .cv-btn-icon
+                background-color: transparent
+
+    .cv-btn-text
+        display: inline-flex
+        width: 70%
+        height: auto
+        text-align: left
+        flex-direction: column
+        &:only-child
+            width: 100%
+        h6
+
+            color: $white
+            font-family: $font_mont
+            font-size: 18px
+            font-weight: bold
+            margin-bottom: 4px
+        p
+            color: $green_dark
+            font-family: $font_open
+            font-size: 14px
+            margin: 0
+
+    .cv-btn-icon
+        transition: $transitions
+        background-color: $green_medium
+        position: absolute
+        top: 0
+        left: 0
+        width: 30%
+        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        display: inline-flex !important
+        border-bottom-left-radius: 4px
+        border-top-left-radius: 4px
+        &.transparent
+            background-color: transparent !important
+        i
+            color: $green_dark
+            font-size: 30px
+            &.white
+                color: $white !important
+
+.cv-logo-text
+    font-family: $font_lato
+    text-transform: uppercase
+    color: $grey_dark
+    font-size: 14px
+    font-weight: bolder
+    @media screen and (min-width: $break_mobile)
+        font-size: 18px
+    @media screen and (min-width: $break_tablets)
+        font-size: 24px
+
+.cv-title
+    font-family: $font_mont
+    font-size: 20px
+    font-weight: bolder
+    color: $grey_light
+    @media screen and (min-width: $break_mobile)
+        font-size: 34px
+    @media screen and (min-width: $break_landscape)
+        font-size: 44px
+
+footer
+    background-color: $grey_dark
+    border-top: 4px solid $green_light
+    .list-inline
+        margin: 0
+        .list-inline-item
+            border-right: 2px solid $green_light
+            &:last-child
+                border-right: none
+                padding-right: 0 !important
+            a
+                font-size: 14px
+                transition: $transitions
+                color: $white
+                &:hover
+                    color: $green_light
+                    text-decoration: none
+.qrcode
+    canvas
+        width: 100% !important
+        height: auto !important
+
+.cv-text-green
+    color: $green_light
+
+.cv-connection-step
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    i
+        color: $green_light
+        font-size: 24px
+        margin: 0 1rem 0 0
+
+    .cv-step-text
+        h4
+            color: $grey_dark
+            margin: 0
+        p
+            margin: 0
+
+.cv-spinner
+    margin-right: 1rem
+    border: 4px solid transparentize($grey_dark,.8)
+    border-top: 4px solid $green_light
+    border-radius: 50%
+    width: 24px
+    height: 24px
+    animation: spin .6s linear infinite
+
+@keyframes spin
+    0%
+        transform: rotate(0deg)
+    100%
+        transform: rotate(360deg)

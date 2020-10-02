@@ -454,7 +454,9 @@ case "${COMMAND}" in
     isCurlInstalled
 
     export AGENT_WEBHOOK_URL="http://api:5000/webhooks"
+    unset LEDGER_URL
     export LEDGER_URL="http://test.bcovrin.vonx.io"
+    # export LEDGER_URL="http://localhost:9000"
     # tails-server
     export GENESIS_URL=${GENESIS_URL:-http://$DOCKERHOST:9000/genesis}
     export STORAGE_PATH=${STORAGE_PATH:-/tmp/tails-files}
@@ -467,9 +469,9 @@ case "${COMMAND}" in
     # fi
 
     # checkNgrokTunnelActive
-    echo "Running in demo mode, will use ${LEDGER_URL} as ledger and ${NGROK_AGENT_ENDPOINT} as the agent endpoint."
     configureEnvironment "$@"
     customizeKeycloakConfig
+    echo "Running in demo mode, will use ${LEDGER_URL} as ledger and ${LEDGER_URL} and ${NGROK_AGENT_ENDPOINT} as the agent endpoint."
     docker-compose up -d ${_startupParams} ${DEFAULT_CONTAINERS} ${MY_CONTAINERS}
     # docker-compose up -d ${_startupParams} ${MYDEV_CONTAINERS}
     docker-compose logs -f

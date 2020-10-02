@@ -1,0 +1,7 @@
+<div class="form-group">
+    <label for="{{to.key}}">{{ to.label }}</label>
+    <select class="form-control" id="{{to.key}}" [formControl]="formControl" [formlyAttributes]="field">
+        
+        <option *ngFor="let province of to.option">{{province.id}}</option>
+    </select>
+</div>

@@ -1,0 +1,52 @@
+<div class="container-fluid mb-nav">
+    <div class="container navbar navbar-expand-lg px-0">
+        <a class="navbar-brand" routerLink="/">
+            <picture>
+                <source media="(max-width: 576px)" srcset="/assets/images/logo_manitoba_mix_s.png">
+                <source media="(min-width: 992px)" srcset="/assets/images/logo_manitoba_mix_m.png">
+                <img id="cv-logo" src="/assets/images/logo_manitoba_mix_s.png" alt="Logo Government of Manitoba">
+            </picture>
+        </a>
+        <div *ngIf="first_name" class="ml-auto">
+            {{first_name}}
+        </div>
+    </div>
+</div>
+<div class="container-fluid mb-second-nav mb-5">
+    <ul class="container d-flex flex-row mr-auto navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/login']" routerLinkActive="active">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/form']" routerLinkActive="active">Generate credential</a>
+        </li>
+        <!-- <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/process']" routerLinkActive="active">Process status</a>
+        </li> -->
+    </ul>
+</div>
+
+
+<!-- Commented as there are no extra pages. -->
+<!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+        aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button> -->
+
+<!-- <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Disabled</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div> -->

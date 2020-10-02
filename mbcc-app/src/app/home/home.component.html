@@ -1,0 +1,42 @@
+<div class="container-fluid h-100 px-0">
+    <div class="row mb-login">
+        <div class="mb-hero-container col-12 col-md-6 pr-0 pr-md-3 mb-5 mb-md-0">
+            <div class="h-100" id="mb-hero">
+
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="d-flex justify-content-flex-start flex-column align-items-center h-100 pt-0 pt-md-5 row">
+                <div class="w-100 d-flex justify-content-center flex-column align-items-center">
+                    <picture>
+                        <source media="(min-width: 992px)" srcset="/assets/images/logo_manitoba_l.png">
+                        <img id="mb-logo" src="/assets/images/logo_manitoba_m.png" alt="Logo Government of Manitoba"
+                            class="mb-4">
+                    </picture>
+                    <div class="mb-title">
+                        <h1 class="mb-0">{{title}}</h1>
+                        <h4>{{subtitle}}</h4>
+                    </div>
+
+                </div>
+                <div class="w-100 d-flex flex-column position-relative row">
+                    <div class="col-8 d-flex justify-content-center mx-auto w-100">
+                        <div @fadeBtns class="qrbuttons d-inline-flex flex-column" *ngIf="!qrlogin">
+                            <app-button-box (click)="showHideQR()" icon="fas fa-mobile-alt"
+                                title="Login using your MBCC credential">
+                            </app-button-box>
+                            <app-button-box (click)="redirectEmptyModel()" color="white" title="Sign Up"
+                                text="Issue your first digital credential">
+                            </app-button-box>
+                        </div>
+                        <div @fadeQR class="qrbox d-inline-flex flex-column" *ngIf="qrlogin">
+                            <div id="closeqr" (click)="showHideQR()"><i class="fas fa-times-circle"></i>
+                            </div>
+                            <app-qrcode></app-qrcode>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

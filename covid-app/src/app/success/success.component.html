@@ -1,0 +1,80 @@
+<section class="container mb-4 mt-4">
+    <div class="row flex-row">
+        <div class="col-12">
+            <h1>Hi {{current_user.first_name}}</h1>
+            <p>We have verified your identity and you have been <strong>approved to receive the COVID Relief benefit.
+                </strong> Please, verify the following
+                information to receive it.</p>
+        </div>
+    </div>
+</section>
+<section class="container mb-4">
+    <div class="row flex-row">
+        <div class="col-lg-12">
+            <div class="cv-light-box p-4">
+                <div class="row flex-row">
+                    <div class="col-12 mb-4">
+                        <h2>You are entitle to receive:</h2>
+                        <h1 class="cv-text-green cv-money">$4,800</h1>
+                        <p>There are different ways for you to receive this amount. Please review and select the option
+                            that you prefer.</p>
+                    </div>
+
+                    <div class="col-12 col-lg-6">
+                        <div class="cv-white-box p-4 mb-4">
+                            <h2>Direct Deposit</h2>
+                            <div *ngIf="current_user.tier == '3'; then tier3; else tier1"></div>
+                            <ng-template #tier1>
+                                <p>To proceed withe a direct deposit to your checking account, you need to present your
+                                    <strong>TIER 3 credential</strong> from MBCC or any digital credential issued by
+                                    your banks.
+                                </p>
+                                <app-button-box color="green" external="http://localhost:4200" icon="fas fa-share"
+                                    title="Go to MBCC" text="Update your credentials"></app-button-box>
+                            </ng-template>
+                            <ng-template #tier3>
+                                <p>We will deposit this amount to this following bank account:
+                                </p>
+                                <div class="cv-address mb-4 mb-lg-0">
+                                    <h6>BANK ACCOUNT</h6>
+                                    <img class="mb-4 mt-4" src="{{bank}}" alt="{{bank_alt}}" />
+                                    <!-- <p>{{current_user.bank_institution_number}}</p>git git  -->
+                                    <p><strong>Transit number: </strong>{{current_user.bank_transit_code}}</p>
+                                    <p><strong>Account number: </strong>{{current_user.bank_account_number}}</p>
+                                </div>
+                                <div class="d-flex flex-row justify-content-center">
+                                    <a routerLink="/sent-benefit" class="btn cv-btn-simple">Receive</a>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="cv-white-box p-4">
+                            <div class="col-12 mb-4">
+                                <h2>Physical Delivery</h2>
+                                <p>Get a cheque delivery to your address. Please confirm this is the address where you
+                                    want to receive it:</p>
+                            </div>
+                            <div class="col-12 mb-4">
+                                <div class="cv-address mb-4 mb-lg-0">
+                                    <h6>MAIN ADDRESS</h6>
+                                    <p>{{current_user.first_name}} {{current_user.last_name}}</p>
+                                    <p *ngIf="current_user.address">{{current_user.address}}</p>
+                                    <p *ngIf="current_user.unit">Unit {{current_user.unit}}</p>
+                                    <p *ngIf="current_user.city">{{current_user.city}}, {{current_user.province}}</p>
+                                    <p *ngIf="current_user.postal_code">{{current_user.postal_code}}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row justify-content-center">
+                                <a routerLink="/sent-benefit" class="btn cv-btn-simple">Send</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Placed it here as the animation will look weird with this outside the router. -->
+<app-footer></app-footer>

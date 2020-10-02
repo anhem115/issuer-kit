@@ -1,0 +1,25 @@
+<app-navigation></app-navigation>
+<div class="container">
+    <div class="col-12 col-8 mx-auto text-center">
+        <h1 class="mb-green">Congratulations!</h1>
+        <p>You have unlocked <strong class="mb-strong">TIER {{tier}}</strong> level and will be available to connect to
+            other guvernamental
+            entities,
+            while you have full control on the information you want to share.
+        </p>
+        <p>
+            Adding information to grow your credential, will allow you to use it at anytime and with multiple
+            persons/companies.
+        </p>
+        <div class="row">
+            <div class="text-center col-12 mx-0 d-flex flex-row justify-content-center">
+                <app-button-box link="/form" icon="fas fa-user-cog" title="Modify credential"
+                    text="Add or modify your information." class="mr-4">
+                </app-button-box>
+                <app-button-box external="http://localhost:4800" icon="fas fa-share-alt" title="COVID-19 Benefit"
+                    text="Try your credentials while you receive a benefit.">
+                </app-button-box>
+            </div>
+        </div>
+    </div>
+</div>

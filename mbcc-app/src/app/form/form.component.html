@@ -1,0 +1,63 @@
+<app-navigation></app-navigation>
+<div class="container">
+    <div class="row mb-5">
+        <h1>Generate credentials</h1>
+        <p>Fill the fields that you want to proceed to issue your new digital credential. The final credential will
+            contain all the
+            fields on it, even if some are empty. That way you will be the only person that will store this information.
+        </p>
+        <p>
+            Certain fields need to be validated externally. In that case, your credential will be issued after that
+            verification;
+            and will be sent to your digital wallet automatically, among an email informing you of the event.
+        </p>
+    </div>
+    <!-- <div>
+         <strong>CURRENT TIER: </strong>{{this.model.tier}}
+    </div> -->
+    <div class="row">
+        <div class="col-12 col-md-3 pr-3 pr-md-0">
+            <div class="d-flex flex-row flex-md-column">
+                <button data-target="#tierOne" data-toggle="collapse" type="button" class="mb-tier-btn w-100"
+                    [ngClass]="{'active' : !t1_collapse}" (click)="collapseTabs('tierOne')"
+                    [attr.aria-expanded]="t1_collapse" aria-controls="tierOne tierTwo tierThree">Tier 1
+                    <span class="mb-tier-state" [ngClass]="t1_state">{{t1_state}}</span>
+                </button>
+                <button data-target="#tierTwo" data-toggle="collapse" type="button" class="mb-tier-btn w-100"
+                    [ngClass]="{'active' : !t2_collapse}" (click)="collapseTabs('tierTwo')"
+                    [attr.aria-expanded]="t2_collapse" aria-controls="tierOne tierTwo tierThree">Tier 2
+                    <span class="mb-tier-state" [ngClass]="t2_state">{{t2_state}}</span>
+                </button>
+                <button data-target="#tierTheree" data-toggle="collapse" type="button" class="mb-tier-btn w-100"
+                    [ngClass]="{'active' : !t3_collapse}" (click)="collapseTabs('tierThree')"
+                    [attr.aria-expanded]="t3_collapse" aria-controls="tierOne tierTwo tierThree">Tier 3
+                    <span class="mb-tier-state" [ngClass]="t3_state">{{t3_state}}</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-12 col-md-9 pl-3 pl-md-0">
+            <div class="w-100 h-100 mb-tier-content p-4 mb-5">
+
+                <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                    <ng-container *ngFor="let tier of all_tiers; let index = index">
+                        <div class="collapse multi-collapse" [ngClass]="{'show': index == 0}" id="{{ tier.id }}"
+                            isAnimated="true">
+                            <formly-form [form]="form.at(index)" [fields]="tier.fields" [model]="model"
+                                [options]="options"></formly-form>
+                        </div>
+                    </ng-container>
+                    <div class="d-flex justify-content-end mb-4 w-100">
+                        <button *ngIf="!t1_collapse" type="submit" class="btn btn-primary btn-default mb-btn" [disabled]="!form.valid">Create credentials</button>
+                        <button *ngIf="!t2_collapse" type="submit" class="btn btn-primary btn-default mb-btn" [disabled]="!form.valid">Send information</button>
+                        <button *ngIf="!t3_collapse" type="submit" class="btn btn-primary btn-default mb-btn" [disabled]="!form.valid">Send information</button>
+                    </div>
+                    <app-alert id="alert" *ngIf="alert" [type]="alertType" [msg]="alertMsg" [title]="alertTitle" [disabled]="alertDisabled"
+                        (onConfirm)="toggleConfirmation($event)"></app-alert>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

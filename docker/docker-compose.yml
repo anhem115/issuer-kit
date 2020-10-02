@@ -119,6 +119,28 @@ services:
   #
   # Public frontend with hot-reloading
   #
+  mbcc-app:
+    image: node:erbium
+    volumes:
+      - ../mbcc-app:/usr/src/mbcc-app
+    working_dir: /usr/src/mbcc-app
+    ports:
+      - 4200:4200
+    networks:
+      - issuer_kit
+    command: npm run serve
+
+  covid-app:
+    image: node:erbium
+    volumes:
+      - ../covid-app:/usr/src/covid-app
+    working_dir: /usr/src/covid-app
+    ports:
+      - 4201:4201
+    networks:
+      - issuer_kit
+    command: npm run serve --port 4201
+
   issuer-web-dev:
     image: node:erbium
     volumes:

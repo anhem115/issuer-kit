@@ -1,0 +1,41 @@
+<div *ngIf="proof$ | async; let proof" class="col-12">
+
+    <div class="cv-light-box d-flex flex-column">
+        <div *ngIf="proof.length == 0; then getConnected else proofRequest"></div>
+        <ng-template #getConnected>
+            <div class="cv-connection-step mb-4">
+                <i class="fas fa-check-circle"></i>
+                <h4 class="mb-0">Connection stablished</h4>
+            </div>
+            <div class="cv-connection-step mb-4">
+                <app-spinner></app-spinner>
+                <div class="cv-step-text">
+                    <h4>Present your credential</h4>
+                    <p>Please follow the steps in your digital wallet to continue.</p>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #proofRequest>
+            <div *ngIf="proof.length == 1;">
+                <div *ngIf="proof[0].verified == 'true'">
+                    <div class="cv-connection-step">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="cv-step-text">
+                            <h4>Your identity has been confirmed</h4>
+                            <p>We will redirect you to the benefit section.</p>
+                            {{ navigateToPage(proof[0])}}
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="proof[0].verified == 'false'">
+                    <h2>Invalid proof</h2>
+                    <p>There was a problem with your credentials. Please login into MBCC and verify your
+                        information.
+                    </p>
+                    <app-button-box link="/" icon="fas fa-share" title="Go to MBCC">
+                    </app-button-box>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</div>

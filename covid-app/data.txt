@@ -1,0 +1,126 @@
+{
+  "connection_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "proof_request": {
+    "nonce": "1234567890",
+    "version": "1.0",
+    "name": "Proof request",
+    "requested_predicates": {
+      "additionalProp1": {
+        "p_value": 0,
+        "restrictions": [
+          {
+            "schema_issuer_did": "WgWxqztrNooG92RXvxSTWv",
+            "schema_name": "transcript",
+            "cred_def_id": "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+            "schema_id": "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+            "schema_version": "1.0",
+            "issuer_did": "WgWxqztrNooG92RXvxSTWv"
+          }
+        ],
+        "name": "index",
+        "p_type": ">=",
+        "non_revoked": {
+          "to": 1593535164,
+          "from": 1593535164
+        }
+      },
+      "additionalProp2": {
+        "p_value": 0,
+        "restrictions": [
+          {
+            "schema_issuer_did": "WgWxqztrNooG92RXvxSTWv",
+            "schema_name": "transcript",
+            "cred_def_id": "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+            "schema_id": "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+            "schema_version": "1.0",
+            "issuer_did": "WgWxqztrNooG92RXvxSTWv"
+          }
+        ],
+        "name": "index",
+        "p_type": ">=",
+        "non_revoked": {
+          "to": 1593535164,
+          "from": 1593535164
+        }
+      },
+      "additionalProp3": {
+        "p_value": 0,
+        "restrictions": [
+          {
+            "schema_issuer_did": "WgWxqztrNooG92RXvxSTWv",
+            "schema_name": "transcript",
+            "cred_def_id": "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+            "schema_id": "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+            "schema_version": "1.0",
+            "issuer_did": "WgWxqztrNooG92RXvxSTWv"
+          }
+        ],
+        "name": "index",
+        "p_type": ">=",
+        "non_revoked": {
+          "to": 1593535164,
+          "from": 1593535164
+        }
+      }
+    },
+    "requested_attributes": {
+      "additionalProp1": {
+        "restrictions": [
+          {
+            "schema_issuer_did": "WgWxqztrNooG92RXvxSTWv",
+            "schema_name": "transcript",
+            "cred_def_id": "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+            "schema_id": "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+            "schema_version": "1.0",
+            "issuer_did": "WgWxqztrNooG92RXvxSTWv"
+          }
+        ],
+        "non_revoked": {
+          "to": 1593535164,
+          "from": 1593535164
+        },
+        "name": "favouriteDrink"
+      },
+      "additionalProp2": {
+        "restrictions": [
+          {
+            "schema_issuer_did": "WgWxqztrNooG92RXvxSTWv",
+            "schema_name": "transcript",
+            "cred_def_id": "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+            "schema_id": "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+            "schema_version": "1.0",
+            "issuer_did": "WgWxqztrNooG92RXvxSTWv"
+          }
+        ],
+        "non_revoked": {
+          "to": 1593535164,
+          "from": 1593535164
+        },
+        "name": "favouriteDrink"
+      },
+      "additionalProp3": {
+        "restrictions": [
+          {
+            "schema_issuer_did": "WgWxqztrNooG92RXvxSTWv",
+            "schema_name": "transcript",
+            "cred_def_id": "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+            "schema_id": "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+            "schema_version": "1.0",
+            "issuer_did": "WgWxqztrNooG92RXvxSTWv"
+          }
+        ],
+        "non_revoked": {
+          "to": 1593535164,
+          "from": 1593535164
+        },
+        "name": "favouriteDrink"
+      }
+    },
+    "non_revoked": {
+      "to": 1593535164,
+      "from": 1593535164
+    }
+  },
+  "comment": "string",
+  "trace": false
+}

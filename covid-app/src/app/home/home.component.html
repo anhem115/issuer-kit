@@ -1,0 +1,72 @@
+<section class="container-fluid mb-4">
+    <div class="row flex-row">
+        <div class="col-md-12 col-lg-8 p-0 positions-relative">
+            <div class="position-absolute d-flex justify-content-center w-100 h-100 align-items-center p-4">
+                <span class="w-100"></span>
+                <h1 class="cv-title w-100">{{main_title}}</h1>
+            </div>
+            <picture>
+                <source media="(max-width: 576px)" srcset="/assets/images/hero_s.jpg">
+                <source media="(max-width: 992px)" srcset="/assets/images/hero_m.jpg">
+                <!-- <source media="(min-width: 993px)" srcset="/assets/images/hero_l.jpg"> -->
+                <img class="img-fluid" src="/assets/images/hero_s.jpg" alt="image_alt">
+            </picture>
+        </div>
+        <div class="col-lg-4 col-md-12 cv-dark-box p-lg-5 px-5 py-4">
+            <h2>Who can apply</h2>
+            <p>As part of the Manitoba Protection Plan, the Manitoba government has implemented a number of initiatives
+                to support
+                Manitobans throughout the COVID-19 pandemic.
+                Find out the benefit you can receive.</p>
+        </div>
+    </div>
+</section>
+<section class="container px-md-5 px-sm-3 px-xs-2">
+    <div class="row flex-row mb-5">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="cv-light-box p-4">
+                <h2>Get your digital ID</h2>
+                <p>Before you can apply to any benefit, verify and update your information. If you don’t have a digital
+                    credential, you can
+                    request one here:
+                </p>
+                <app-button-box color="green" link="login" icon="fas fa-user-cog"
+                    title="Request your digital credential" text="MB Central Citizen"></app-button-box>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="cv-light-box p-4">
+                <h2>Apply for the benefit</h2>
+                <p>We have multiple ways for you to apply for the benefit. The faster way is to use MBCC, but please
+                    connect
+                    with the one
+                    that you prefer:
+                </p>
+                <app-button-box color="green" link="/" icon="fas fa-mobile-alt" title="MB Central Citizen"
+                    text="Digital credential"></app-button-box>
+                <div class="cv-white-box mx-auto p-4 mt-3">
+                    <h2>SSO - Single Sign On</h2>
+                    <p>Use any of our partners to login and apply for your benefit.
+                    </p>
+                    <app-button-box color="red" icon-color="white" link="/" icon="fab fa-google"
+                        title="Sign in with Google"></app-button-box>
+                    <app-button-box color="blue" icon-color="white" link="/" icon="fab fa-facebook-f"
+                        title="Sign in with Facebook"></app-button-box>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row flex-row mb-5">
+        <div class="col-lg-8">
+            <h4>Useful information</h4>
+            <p>Get the latest information about the COVID-19 situation; as well as other plans from the
+                Government of Manitoba.</p>
+        </div>
+        <div class="col-lg-4">
+            <app-button-box color="green" link="/" icon="fas fa-share" title="Go to Government of Manitoba website">
+            </app-button-box>
+        </div>
+    </div>
+</section>
+<!-- Placed it here as the animation will look weird with this outside the router. -->
+<app-footer></app-footer>

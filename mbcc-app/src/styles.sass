@@ -1,0 +1,419 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;900&display=swap')
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap')
+
+$green_light: #27a348
+$green_medium: #1D8738
+$green_dark: #0F3E1B
+
+$grey_light: #FAFAFA
+$grey_medium: #ECEFF1
+$grey_dark: #263238
+
+$white: #FFF
+$red: #DD4B39
+$blue: #3B5998
+$orange: #F57F17
+
+$font_merri: 'Merriweather', serif
+$font_robo: 'Roboto', sans-serif
+
+$shadow: 0px 4px 4px rgba(73, 30, 30, 0.15)
+$shadow-hero: 4px 0 32px rgba(27, 22, 22, 0.15)
+$transitions: all ease-in-out .2s
+
+$break_mobile: 575.98px
+$break_landscape: 767.98px
+$break_tablets: 991.98px
+$break_desktops: 1199.98px
+
+@mixin h1_style($color)
+    font-weight: 600
+    font-size: 28px
+    color: $color
+
+@mixin h2_style($color)
+    font-weight: 600
+    font-size: 26px
+    color: $color
+
+@mixin p_style($color)
+    color: $color
+    font-family: $font_open
+    font-size: 14px
+
+html, body
+    background-color: $grey_light
+
+a
+    text-decoration: none !important
+
+.mb-overflow
+    overflow-y: scroll
+
+#mb-hero
+    background-color: $green_medium
+    box-shadow: $shadow_hero
+    background-image: url('/assets/images/hero_s.jpg')
+    background-repeat: no-repeat
+    background-size: cover
+    background-position: center center
+    // min-height: 200px
+    // max-height: 400px
+    height: 240px !important
+    @media screen and ( min-width: $break_landscape )
+        min-height: unset
+        max-height: unset
+        height: 100% !important
+        background-image: url('/assets/images/hero_m.jpg')
+.mb-login
+    height: unset
+    @media screen and ( min-width: $break_landscape )
+        min-height: 100% !important
+
+h1
+    font-family: $font_merri
+    font-weight: 400
+    font-size: 40px
+
+p
+    font-family: $font_robo
+    font-weight: 300
+    font-size: 16px
+
+.mb-title
+    text-align: center
+    margin-bottom: 3rem
+    h4
+        color: $green_light
+        font-family: $font_robo
+        font-weight: 300
+.cv-btn-transparent
+    color: $green_dark
+    padding: .8rem 1.2rem .8rem 0
+    font-weight: bold
+    transition: $transitions
+    font-size: 18px
+    i
+        color: $green_light
+    &:hover
+        color: $green_light
+        cursor: pointer
+
+.cv-btn-simple
+    background-color: $green_light
+    color: $white
+    font-weight: bold
+    padding: .8rem 1.2rem
+    &:hover
+        background-color: lighten($green_light,4)
+        color: $white
+
+.cv-btn
+    border-radius: 4px
+    padding: 0.8em 1.2em
+    background-color: $green_light
+    display: flex
+    justify-content: flex-end
+    align-content: center
+    position: relative
+    box-shadow: $shadow
+    border: 0
+    transition: $transitions
+    width: 90%
+    max-width: 320px
+    min-width: 220px
+    cursor: pointer
+    @media screen and (min-width: $break_tablets)
+        width: 280px
+
+    &.green
+        background-color: $green_light
+        &:hover
+            background-color: lighten($green_light,4)
+            .cv-btn-icon
+                background-color: transparentize($green_medium,.5)
+    &.white
+        background-color: $white
+        .cv-btn-text
+            text-align: center
+            h6
+                color: $green_light !important
+        .cv-btn-icon
+            background-color: transparent
+        &:hover
+            background-color: lighten($white,4)
+            .cv-btn-icon
+                background-color: transparent
+    &.red
+        background-color: $red
+        .cv-btn-icon
+            background-color: transparent
+        &:hover
+            background-color: lighten($red,8)
+            .cv-btn-icon
+                background-color: transparent
+    &.blue
+        background-color: $blue
+        .cv-btn-icon
+            background-color: transparent
+        &:hover
+            background-color: lighten($blue,8)
+            .cv-btn-icon
+                background-color: transparent
+
+    .cv-btn-text
+        display: inline-flex
+        width: 70%
+        height: auto
+        text-align: left
+        flex-direction: column
+        &:only-child
+            width: 100%
+
+        h6
+
+            color: $white
+            font-family: $font_robo
+            font-size: 18px
+            font-weight: bold
+            margin-bottom: 4px
+        p
+            color: $green_dark
+            font-family: $font_robo
+            font-size: 14px
+            margin: 0
+
+    .cv-btn-icon
+        transition: $transitions
+        background-color: $green_medium
+        position: absolute
+        top: 0
+        left: 0
+        width: 30%
+        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        display: inline-flex !important
+        border-bottom-left-radius: 4px
+        border-top-left-radius: 4px
+        &.transparent
+            background-color: transparent !important
+        i
+            color: $green_dark
+            font-size: 30px
+            &.white
+                color: $white !important
+#closeqr
+    position: absolute
+    right: 0
+    top: 0
+    cursor: pointer
+    width: fit-content
+    i
+        color: $green_light
+        text-shadow: $shadow
+        font-size: 24px
+
+.mb-steps
+    i
+        color: $green_light
+        margin-right: 1rem
+        font-size: 1.4rem
+    h4
+        margin: 0
+
+.qrbox
+    .qrcode
+        width: 100% !important
+        height: auto !important
+        @media screen and ( min-width: $break_desktops )
+            min-width: 400px !important
+        canvas
+            width: 100% !important
+            height: auto !important
+
+// NAVIGATION
+.mb-nav
+    background-color: $green_light
+
+.mb-second-nav
+    background-color: $grey_dark
+    font-family: $font_robo
+    font-weight: lighter
+    font-size: 18px
+    text-transform: uppercase
+    .nav-item
+        padding: .8rem 0
+        .nav-link
+            border-right: 2px solid $green_light
+            padding: 0 1rem
+            color: $white
+            transition: $transitions
+            &:hover, &.active
+                color: $green_light
+                text-decoration: none
+
+.mb-tier-btn
+    padding: .8rem 0
+    margin-bottom: 0.3rem
+    border: 0
+    font-family: $font_robo
+    font-weight: 700
+    text-transform: uppercase
+    font-size: 28px
+    background-color: transparent
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    @media screen and ( min-width: $break_tablets )
+        flex-direction: row
+
+    &:focus
+        outline: 0
+    &:hover, &.active
+        background-color: $grey_medium
+    .mb-tier-state
+        font-size: 12px
+        padding: .3rem .5rem
+        color: $white
+        border-radius: 50px
+        &.unlocked
+            background-color: $green_light
+        &.locked
+            background-color: $orange
+        &.errors
+            background-color: $red
+        @media screen and ( min-width: $break_tablets )
+            margin-left: 1rem !important
+.mb-green
+    color: $green_light
+.mb-strong
+    font-family: $font_robo
+    font-weight: 700
+    font-size: 18px
+.mb-tier-content
+    background-color: $grey_medium
+
+.mb-tier-group-headers
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    width: 100%
+    color: $green_medium
+    margin-bottom: .5rem
+    strong
+        margin-right: 1rem
+        flex-shrink: 0
+    hr
+        position: relative
+        width: 100%
+        border-top: 2px dashed
+        right: 0
+        margin: 0
+        border-color: $green_medium
+
+.mb-tier-levels
+    h2
+        font-family: $font_robo
+        font-weight: 700
+        font-size: 30px
+        margin-bottom: 0
+    h6
+        font-family: $font_robo
+        font-weight: 700
+        font-size: 16px
+        color: $green_light
+    ul
+        padding-left: 15px
+        font-size: 0.9rem
+
+.cv-connection-step
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    i
+        color: $green_light
+        font-size: 24px
+        margin: 0 1rem 0 0
+
+    .cv-step-text
+        h4
+            color: $grey_dark
+            margin: 0
+        p
+            margin: 0
+
+.cv-spinner
+    margin-right: 1rem
+    border: 4px solid transparentize($grey_dark,.8)
+    border-top: 4px solid $green_light
+    border-radius: 50%
+    width: 24px
+    height: 24px
+    animation: spin .6s linear infinite
+
+@keyframes spin
+    0%
+        transform: rotate(0deg)
+    100%
+        transform: rotate(360deg)
+
+//    Animista clases 
+.fade-out-bottom
+    -webkit-animation: fade-out-bottom .7s cubic-bezier(.25,.46,.45,.94) both
+    animation: fade-out-bottom .7s cubic-bezier(.25,.46,.45,.94) both
+@-webkit-keyframes fade-out-bottom
+    0%
+        -webkit-transform: translateY(0)
+        transform: translateY(0)
+        opacity: 1
+    100%
+        -webkit-transform: translateY(50px)
+        transform: translateY(50px)
+        opacity: 0
+@keyframes fade-out-bottom
+    0%
+        -webkit-transform: translateY(0)
+        transform: translateY(0)
+        opacity: 1
+    100%
+        -webkit-transform: translateY(50px)
+        transform: translateY(50px)
+        opacity: 0
+
+.scale-in-ver-top
+    -webkit-animation: scale-in-ver-top 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both
+    animation: scale-in-ver-top 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both
+
+@-webkit-keyframes scale-in-ver-top
+  0%
+    -webkit-transform: scaleY(0)
+    transform: scaleY(0)
+    -webkit-transform-origin: 100% 0%
+    transform-origin: 100% 0%
+    opacity: 1
+
+  100%
+    -webkit-transform: scaleY(1)
+    transform: scaleY(1)
+    -webkit-transform-origin: 100% 0%
+    transform-origin: 100% 0%
+    opacity: 1
+
+@keyframes scale-in-ver-top
+    0%
+        -webkit-transform: scaleY(0)
+        transform: scaleY(0)
+        -webkit-transform-origin: 100% 0%
+        transform-origin: 100% 0%
+        opacity: 1
+
+    100%
+        -webkit-transform: scaleY(1)
+        transform: scaleY(1)
+        -webkit-transform-origin: 100% 0%
+        transform-origin: 100% 0%
+        opacity: 1
